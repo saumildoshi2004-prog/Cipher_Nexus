@@ -8,8 +8,11 @@ We are a team of passionate Information Technology students from Indus Universit
 👥 Team Members:
 
 Saumil Doshi
+
 Bansari Pandya
+
 Mihir Trivedi
+
 Nisha Sharma
 
 🎓 About Us
