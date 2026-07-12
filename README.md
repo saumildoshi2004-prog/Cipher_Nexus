@@ -1,24 +1,102 @@
-# Cipher_Nexus
-👨‍💻 Team Introduction
+# TransitOps
 
-Welcome to our hackathon project repository!
+Smart Transport Operations Platform built for the **Odoo Hackathon**.
 
-We are a team of passionate Information Technology students from Indus University, driven by innovation and a shared enthusiasm for building impactful web-based solutions. With strong expertise in modern web development technologies, we collaborate to design, develop, and deliver scalable, user-centric applications.
+> **Project Status:** 🚧 Under Development
 
-👥 Team Members:-
+---
 
-Saumil Doshi
+## About
 
-Bansari Pandya
+TransitOps is a centralized transport management system designed to simplify fleet operations. The platform helps organizations manage vehicles, drivers, trips, maintenance, fuel logs, expenses, and operational reports from a single dashboard.
 
-Mihir Trivedi
+The project is currently in its initial development phase, with research and planning completed. The team is actively working on implementing authentication and role-based access control.
 
-Nisha Sharma
+---
 
-🎓 About Us
+## Current Progress
 
-We are currently pursuing our Bachelor's degree in Information Technology at Indus University. As aspiring Web Developers, we are passionate about creating responsive, efficient, and user-friendly applications while continuously exploring emerging technologies and best development practices.
+### ✅ Completed
+- Problem Statement Analysis
+- Requirement Gathering
+- Business Workflow Research
+- Database Schema Planning
+- Module Planning
+- UI Wireframe Discussion
+- Technology Stack Selection
 
-Through this hackathon, our goal is to leverage our technical knowledge, creativity, and teamwork to build an innovative solution that addresses real-world challenges. We believe that collaboration, problem-solving, and continuous learning are the key ingredients for creating meaningful technology.
+### 🚧 In Progress
+- User Authentication
+- Login & Registration
+- Role-Based Access Control (RBAC)
+- Session Management
 
-Thank you for visiting our repository. We hope you find our project insightful and impactful!
+### 📋 Upcoming
+- Vehicle Management
+- Driver Management
+- Trip Management
+- Maintenance Module
+- Fuel & Expense Tracking
+- Dashboard
+- Reports & Analytics
+
+---
+
+## Planned Features
+
+- Secure User Authentication
+- Role-Based Access Control (RBAC)
+- Vehicle Registry
+- Driver Management
+- Trip Dispatch System
+- Maintenance Workflow
+- Fuel & Expense Management
+- Dashboard with KPIs
+- Reports & Analytics
+- CSV Export
+
+---
+
+## Tech Stack
+
+- Odoo
+- Python
+- PostgreSQL
+- XML
+- HTML
+- CSS
+- JavaScript
+
+---
+
+## Development Checklist
+
+- [x] Project Planning
+- [x] Requirement Analysis
+- [x] Business Rule Research
+- [x] Database Design
+- [x] UI Planning
+- [ ] Authentication
+- [ ] Login & Registration
+- [ ] RBAC
+- [ ] Vehicle Module
+- [ ] Driver Module
+- [ ] Trip Module
+- [ ] Maintenance Module
+- [ ] Fuel & Expense Module
+- [ ] Dashboard
+- [ ] Reports
+
+---
+
+## Repository Status
+
+🚧 This repository is currently under active development as part of the **Odoo Hackathon**.
+
+The team has completed the research and planning phase and is currently implementing the authentication module. New features and modules will be added incrementally throughout the hackathon.
+
+---
+
+## Team
+
+Developed by our team for the **Odoo Hackathon 2026**.
