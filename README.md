@@ -1,107 +1,82 @@
 # Cipher_Nexus
 
-> **Smart Transport Operations Platform**  
-Developed for the **Odoo Hiring Hackathon 2026**
+> Smart Transport Operations Platform developed for the **Odoo Hiring Hackathon 2026**.
 
-## 📖 About
+## 📖 Overview
 
-Cipher_Nexus is a Transport Management System (TMS) designed to simplify and centralize fleet operations. The platform enables organizations to manage vehicles, drivers, trips, maintenance, fuel records, expenses, and operational analytics through a single interface.
+Cipher_Nexus is a web-based Transport Management System designed to streamline and manage transport operations through a centralized platform. The application enables secure user authentication and role-based access while providing modules to manage vehicles, drivers, trips, maintenance records, fuel logs, operational expenses, and analytics.
 
-This project is being developed as part of the **Odoo Hiring Hackathon**.
-
----
-
-## 🚀 Current Development Status
-
-### ✅ Completed
-
-- Project Planning
-- Requirement Analysis
-- Business Workflow Research
-- Database Design
-- Login Interface
-- Signup Interface
-- Secure User Authentication
-- Password Hashing
-- Session Management
-- MySQL Database Integration
-- Role-Based Authentication
-- Responsive UI
-
-### 🚧 Currently Working On
-
-- Vehicle Management Module
-- Driver Management Module
-- Trip Management
-- Fleet Dashboard
-- Reports & Analytics
+The project was built to address the problem statement provided during the Odoo Hiring Hackathon and focuses on creating an efficient, secure, and user-friendly fleet management solution.
 
 ---
 
 ## ✨ Features
 
-- Secure Login & Signup
-- Password Hashing using PHP
-- Role-Based Authentication (RBAC)
+- Secure Login & Signup System
+- Role-Based Access Control (RBAC)
+- Password Hashing for Secure Authentication
 - Session Management
-- MySQL Database Connectivity
+- Vehicle Management
+- Driver Management
+- Trip Management
+- Maintenance Management
+- Fuel & Expense Tracking
+- Dashboard with Operational Insights
+- Reports & Analytics
 - Responsive User Interface
-- Clean and Modern Design
-- Fleet Management System (In Progress)
+- Modern and Clean Design
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-**Frontend**
+### Frontend
 - HTML5
 - CSS3
 - JavaScript
 
-**Backend**
+### Backend
 - PHP
 
-**Database**
+### Database
 - MySQL
 
-**Server**
-- Apache (XAMPP)
+### Development Environment
+- XAMPP
+- phpMyAdmin
 
 ---
 
-## 📂 Project Structure
+## 🔒 Security Features
 
-
+- Password Hashing using `password_hash()`
+- Password Verification using `password_verify()`
+- Session-Based Authentication
+- Duplicate Account Validation
+- Role-Based User Authentication
+- Secure Database Connectivity
 
 ---
 
-## ⚙ Installation
+## 🚀 Installation
 
-1. Clone the repository
+1. Clone the repository.
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/Cipher_Nexus.git
 ```
 
-2. Move the project into the XAMPP `htdocs` directory.
+2. Move the project folder into the **htdocs** directory of XAMPP.
 
-3. Start **Apache** and **MySQL** from XAMPP.
+3. Start **Apache** and **MySQL** using the XAMPP Control Panel.
 
-4. Create a database named:
+4. Create a MySQL database.
 
-```
-transitops
-```
+5. Import the provided SQL file into the database.
 
-5. Import the SQL file or create the required tables.
+6. Update the database configuration inside `db.php`.
 
-6. Update database credentials in:
-
-```
-db.php
-```
-
-7. Open your browser:
+7. Open your browser and visit:
 
 ```
 http://localhost/Cipher_Nexus/login.php
@@ -109,55 +84,46 @@ http://localhost/Cipher_Nexus/login.php
 
 ---
 
-## 🔒 Security
+## 📊 Modules
 
-- Password Hashing (`password_hash()`)
-- Password Verification (`password_verify()`)
-- Session-Based Authentication
-- Duplicate Email Validation
-- Secure Login Flow
-- Role-Based Access Control
-
----
-
-## 📋 Upcoming Features
-
-- Vehicle Registry
+- User Authentication
+- Fleet Management
 - Driver Management
-- Trip Dispatch
-- Maintenance Module
-- Fuel Logs
+- Trip Operations
+- Maintenance Records
+- Fuel Management
 - Expense Tracking
-- Dashboard Analytics
-- CSV Export
+- Dashboard
 - Reports
-- Fleet Utilization
-- Vehicle ROI
 
 ---
 
-## 📸 Screenshots
+## 🎯 Project Objective
 
-> Screenshots will be added after completing the remaining modules.
-
----
-
-## 🎯 Project Goal
-
-Develop a secure and scalable Transport Management System that streamlines fleet operations while demonstrating strong backend development, authentication, database management, and role-based access control.
+The primary objective of Cipher_Nexus is to simplify transport operations by providing a centralized platform that manages fleet resources, drivers, trips, operational expenses, and reporting while maintaining secure user authentication and role-based access.
 
 ---
 
-## 👨‍💻 Developer
+## 🌟 Future Enhancements
 
-**Mihir Trivedi**
-
-B.Tech Information Technology
-
-Developed for the **Odoo Hiring Hackathon 2026**
+- Email Notifications
+- Vehicle Document Management
+- CSV & PDF Report Export
+- Interactive Charts & Graphs
+- Advanced Search & Filters
+- Dark Mode Improvements
+- Mobile Optimization
 
 ---
 
-## ⭐ Repository Status
 
-This repository is under active development. New modules and improvements are being added throughout the hackathon.
+
+## 📄 License
+
+This project was developed for educational and hackathon purposes as part of the **Odoo Hiring Hackathon 2026**.
+
+---
+
+## ⭐ Acknowledgements
+
+Special thanks to **Odoo** for organizing the hackathon and providing an opportunity to build a real-world Transport Management System using modern web technologies.
