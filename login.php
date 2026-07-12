@@ -1,3 +1,50 @@
+<?php
+
+session_start();
+
+include("db.php");
+
+if(isset($_POST['login'])){
+
+$email=mysqli_real_escape_string($conn,$_POST['email']);
+
+$password=$_POST['password'];
+
+$role=mysqli_real_escape_string($conn,$_POST['role']);
+
+$sql=mysqli_query($conn,"SELECT * FROM users
+WHERE email='$email'
+AND role='$role'");
+
+if(mysqli_num_rows($sql)>0){
+
+$row=mysqli_fetch_assoc($sql);
+
+if(password_verify($password,$row['password'])){
+
+$_SESSION['email']=$row['email'];
+
+$_SESSION['role']=$row['role'];
+
+header("Location: dashboard.php");
+
+exit();
+
+}else{
+
+echo "<script>alert('Wrong Password');</script>";
+
+}
+
+}else{
+
+echo "<script>alert('Invalid Email');</script>";
+
+}
+
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
