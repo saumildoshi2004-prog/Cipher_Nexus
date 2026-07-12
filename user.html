@@ -132,6 +132,8 @@
   .badge.pending{background:var(--warning-bg);color:var(--warning);} .badge.assigned{background:var(--info-bg);color:var(--info);}
   .badge.progress{background:var(--info-bg);color:var(--info);} .badge.completed{background:var(--success-bg);color:var(--success);}
   .badge.cancelled{background:var(--danger-bg);color:var(--danger);}
+  .priority-tag{font-size:.68rem;font-weight:800;padding:.15rem .55rem;border-radius:6px;display:inline-flex;align-items:center;gap:.3rem;} .priority-tag i{font-size:.62rem;}
+  .priority-tag.high{background:var(--danger-bg);color:var(--danger);} .priority-tag.medium{background:var(--warning-bg);color:var(--warning);} .priority-tag.low{background:var(--success-bg);color:var(--success);}
   .filter-bar{display:flex;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;}
   .filter-bar select,.filter-bar input[type="text"]{padding:.6rem 1rem;border-radius:14px;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--text-primary);font-size:.82rem;font-family:inherit;outline:none;}
   .filter-bar select:focus,.filter-bar input:focus{border-color:var(--input-focus);box-shadow:var(--input-shadow);}
@@ -152,6 +154,11 @@
   .input-group.valid input,.input-group.valid select{border-color:var(--success);} .input-group.valid .validation-icon.fa-check-circle{opacity:1;}
   .input-group.invalid input,.input-group.invalid select,.input-group.invalid textarea{border-color:var(--danger);} .input-group.invalid .validation-icon.fa-circle-exclamation{opacity:1;}
   .error-msg{font-size:.72rem;color:var(--danger);font-weight:600;display:none;align-items:center;gap:.35rem;margin-top:.1rem;} .error-msg i{font-size:.7rem;} .input-group.invalid .error-msg{display:flex;}
+  .priority-picker{display:flex;gap:.6rem;}
+  .priority-opt{flex:1;text-align:center;padding:.7rem .5rem;border-radius:14px;border:1.5px solid var(--input-border);cursor:pointer;font-size:.78rem;font-weight:700;transition:.15s;display:flex;align-items:center;justify-content:center;gap:.4rem;} .priority-opt i{font-size:.82rem;}
+  .priority-opt.sel-low.selected{background:var(--success-bg);border-color:var(--success);color:var(--success);}
+  .priority-opt.sel-medium.selected{background:var(--warning-bg);border-color:var(--warning);color:var(--warning);}
+  .priority-opt.sel-high.selected{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
   .modal-overlay{position:fixed;inset:0;background:rgba(6,14,20,0.55);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;visibility:hidden;transition:.2s;} .modal-overlay.open{opacity:1;visibility:visible;}
   .modal-box{background:var(--card-bg-solid);border-radius:28px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);transform:scale(.94) translateY(10px);transition:.22s cubic-bezier(.34,1.1,.64,1);border:1px solid var(--card-border);}
   .modal-overlay.open .modal-box{transform:scale(1) translateY(0);} .modal-box.wide{max-width:760px;}
@@ -197,9 +204,10 @@
   .track-labels{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--text-secondary);}
   .track-eta{text-align:center;margin-top:1.6rem;}
   .track-eta .big{font-size:1.9rem;font-weight:800;} .track-eta .lbl{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+  .connect-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--info-bg);color:var(--info);padding:.15rem .6rem;border-radius:20px;font-size:.68rem;font-weight:700;margin-left:.5rem;}
   @media (max-width:1080px){.stats-grid{grid-template-columns:repeat(2,1fr);} .grid-2{grid-template-columns:1fr;} .quick-grid{grid-template-columns:repeat(2,1fr);} .form-grid{grid-template-columns:1fr;}}
   @media (max-width:860px){.sidebar{transform:translateX(-100%);box-shadow:20px 0 60px rgba(0,0,0,.3);} .sidebar.open{transform:translateX(0);} .sidebar-close{display:flex;position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,0.08);border:none;color:#fff;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;cursor:pointer;} .main{margin-left:0;} .hamburger{display:flex;} .search-box{display:none;} .stats-grid{grid-template-columns:1fr 1fr;} .quick-grid{grid-template-columns:1fr 1fr;}}
-  @media (max-width:480px){.content{padding:1.2rem 1rem 2.5rem;} .topbar{padding:.9rem 1rem;} .stats-grid{grid-template-columns:1fr;} .quick-grid{grid-template-columns:1fr;} .active-trip .meta-row{gap:1rem;} .user-chip .info{display:none;}}
+  @media (max-width:480px){.content{padding:1.2rem 1rem 2.5rem;} .topbar{padding:.9rem 1rem;} .stats-grid{grid-template-columns:1fr;} .quick-grid{grid-template-columns:1fr;} .active-trip .meta-row{gap:1rem;} .user-chip .info{display:none;} .priority-picker{flex-direction:column;}}
   .sidebar-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50;} .sidebar-scrim.show{display:block;}
 </style>
 </head>
@@ -240,8 +248,6 @@
           <div class="user-chip" id="userChipBtn"><div class="avatar" id="avatarInit">U</div><div class="info"><p id="chipName">Guest User</p><p>Customer</p></div><i class="fas fa-chevron-down" style="font-size:.7rem;color:var(--text-muted)"></i></div>
           <div class="dropdown-panel" id="userPanel">
             <div class="dropdown-item" data-page="profile" style="display:flex;align-items:center;gap:.7rem;padding:.65rem .7rem;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;"><i class="fas fa-user" style="width:16px;color:var(--text-muted);"></i> My Profile</div>
-            <div style="height:1px;background:var(--divider);margin:.4rem .2rem;"></div>
-            <div class="dropdown-item" id="signOutBtn" style="display:flex;align-items:center;gap:.7rem;padding:.65rem .7rem;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--danger);"><i class="fas fa-right-from-bracket" style="width:16px;"></i> Sign Out</div>
           </div>
         </div>
       </div>
@@ -251,7 +257,7 @@
 
       <!-- DASHBOARD -->
       <section class="page active" id="page-dashboard">
-        <div class="page-header"><div><h2>Your trips at a glance</h2><p id="dateLine"></p></div><button class="btn btn-primary" data-page="bookTrip"><i class="fas fa-plus"></i> Book a Trip</button></div>
+        <div class="page-header"><div><h2>Your trips at a glance <span class="connect-pill"><i class="fas fa-link"></i> synced with Driver console</span></h2><p id="dateLine"></p></div><button class="btn btn-primary" data-page="bookTrip"><i class="fas fa-plus"></i> Book a Trip</button></div>
         <div class="stats-grid" id="statsGrid"></div>
         <div id="activeTripWrap"></div>
         <div class="grid-2">
@@ -278,7 +284,7 @@
 
       <!-- BOOK TRIP -->
       <section class="page" id="page-bookTrip">
-        <div class="page-header"><div><h2>Book a Trip</h2><p>Fill in the details below — every field is validated before you can submit.</p></div></div>
+        <div class="page-header"><div><h2>Book a Trip</h2><p>Your request goes straight to the driver console — they'll accept or reject it.</p></div></div>
         <div class="card" style="max-width:820px;">
           <form id="bookForm" novalidate>
             <div class="form-grid">
@@ -318,10 +324,20 @@
                 <div class="field-wrap"><select id="bt_vehicle" required><option value="">— select —</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
                 <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please select a vehicle.</span></div>
               <div class="input-group full" id="farePreview" style="display:none;"></div>
+              <div class="input-group full"><label><i class="fas fa-signal"></i> Priority</label>
+                <div class="priority-picker" id="priorityPicker">
+                  <div class="priority-opt sel-low" data-val="Low"><i class="fas fa-arrow-down"></i> Low</div>
+                  <div class="priority-opt sel-medium selected" data-val="Medium"><i class="fas fa-equals"></i> Medium</div>
+                  <div class="priority-opt sel-high" data-val="High"><i class="fas fa-triangle-exclamation"></i> High</div>
+                </div>
+              </div>
+              <div class="input-group full" data-req="true"><label><i class="fas fa-note-sticky"></i> Notes <span class="req-star">*</span></label>
+                <div class="field-wrap"><textarea id="bt_notes" required placeholder="Any special instructions for this trip..."></textarea></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please add a note for this trip.</span></div>
             </div>
             <div style="display:flex; gap:.8rem; justify-content:flex-end; margin-top:.4rem;">
               <button type="button" class="btn btn-outline" id="bookFormReset"><i class="fas fa-rotate-left"></i> Clear</button>
-              <button type="submit" class="btn btn-primary" id="bookSubmitBtn" disabled title="Fill in all required fields to enable"><i class="fas fa-circle-check"></i> Book Trip</button>
+              <button type="submit" class="btn btn-primary" id="bookSubmitBtn" disabled title="Fill in all required fields to enable"><i class="fas fa-circle-check"></i> Send Request</button>
             </div>
           </form>
         </div>
@@ -329,7 +345,7 @@
 
       <!-- TRACK TRIP -->
       <section class="page" id="page-trackTrip">
-        <div class="page-header"><div><h2>Track Trip</h2><p>Live position updates once your trip is In Transit (simulated for this demo).</p></div></div>
+        <div class="page-header"><div><h2>Track Trip</h2><p>Live status once a driver accepts your request — progress here is simulated for this demo.</p></div></div>
         <div class="card">
           <div class="input-group" style="max-width:380px;"><label><i class="fas fa-route"></i> Select Trip to Track</label>
             <select id="trackTripSelect"></select></div>
@@ -339,14 +355,14 @@
 
       <!-- TRIP HISTORY -->
       <section class="page" id="page-tripHistory">
-        <div class="page-header"><div><h2>Trip History</h2><p>Every trip you've booked, in progress, or completed.</p></div><button class="btn btn-primary" data-page="bookTrip"><i class="fas fa-plus"></i> New Trip</button></div>
+        <div class="page-header"><div><h2>Trip History</h2><p>Every trip you've requested, accepted, or completed.</p></div><button class="btn btn-primary" data-page="bookTrip"><i class="fas fa-plus"></i> New Trip</button></div>
         <div class="card">
           <div class="filter-bar">
             <input type="text" id="th_search" placeholder="Search by name or route..." style="flex:1; min-width:220px;" />
-            <select id="th_statusFilter"><option value="all">All statuses</option><option value="Requested">Requested</option><option value="Assigned">Assigned</option><option value="In Transit">In Transit</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select>
-            <select id="th_sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="fare">By fare (high–low)</option></select>
+            <select id="th_statusFilter"><option value="all">All statuses</option><option value="Requested">Requested</option><option value="Accepted">Accepted</option><option value="In Transit">In Transit</option><option value="Completed">Completed</option><option value="Rejected">Rejected</option><option value="Cancelled">Cancelled</option></select>
+            <select id="th_sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="priority">By priority</option></select>
           </div>
-          <div class="table-wrap"><table><thead><tr><th>Trip</th><th>Route</th><th>Cargo / Trip Type</th><th>Vehicle</th><th>Driver</th><th>Status</th><th>Date</th><th>Fare</th><th>Actions</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Trip</th><th>Route</th><th>Vehicle</th><th>Driver</th><th>Priority</th><th>Status</th><th>Date</th><th>Fare</th><th>Actions</th></tr></thead><tbody id="historyBody"></tbody></table></div>
           <div id="historyEmpty"></div>
         </div>
       </section>
@@ -377,19 +393,19 @@
       </section>
 
     </div>
-    <footer class="appfoot">FleetOps Book &amp; Track · Customer Console · driver location tracking shown here is simulated for demo purposes</footer>
+    <footer class="appfoot">FleetOps Book &amp; Track · Customer Console · connected live to the Driver console via shared trip data</footer>
   </div>
 </div>
 
 <!-- Trip Confirmed -->
 <div class="modal-overlay" id="modalTripConfirmed">
   <div class="modal-box">
-    <div class="modal-head"><h3><i class="fas fa-route"></i> Booking Confirmation</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
+    <div class="modal-head"><h3><i class="fas fa-route"></i> Request Sent</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
     <div class="modal-body">
       <div class="success-burst">
         <div class="circle"><i class="fas fa-check"></i></div>
-        <h4>Trip Booked!</h4>
-        <p class="sub">We're finding you a vehicle &amp; driver. You'll get a notification once one is assigned.</p>
+        <h4>Trip Requested!</h4>
+        <p class="sub">Your request has been sent to the driver console. You'll get a notification once it's accepted or rejected.</p>
         <div class="success-detail-card" id="tripConfirmedDetails"></div>
       </div>
     </div>
@@ -415,15 +431,6 @@
   </div>
 </div>
 
-<!-- Sign Out -->
-<div class="modal-overlay" id="modalSignOut">
-  <div class="modal-box">
-    <div class="modal-head"><h3><i class="fas fa-right-from-bracket"></i> Sign Out</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
-    <div class="modal-body"><div class="confirm-icon warn"><i class="fas fa-right-from-bracket"></i></div><p style="font-size:.92rem; color:var(--text-secondary); line-height:1.6;">Are you sure you want to sign out? You'll need to re-enter your details next time you book a trip.</p></div>
-    <div class="modal-foot"><button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-danger" id="confirmSignOutBtn"><i class="fas fa-right-from-bracket"></i> Sign Out</button></div>
-  </div>
-</div>
-
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
@@ -434,23 +441,23 @@
   (function initTheme(){ const s=localStorage.getItem('fleetops-user-theme'); if(s==='dark'||s==='light'){setTheme(s);return;} setTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'); })();
   themeToggle.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
 
-  /* STATE — nothing pre-filled */
+  /* SHARED STORAGE — connects this file to the Driver console */
+  const K_REQUESTS='to_trip_requests';
+  async function storeGet(key){ try{ const r=await window.storage.get(key,true); return r? JSON.parse(r.value): null; }catch(e){ return null; } }
+  async function storeSet(key,val){ try{ await window.storage.set(key, JSON.stringify(val), true); }catch(e){ console.error('storage set failed',e); } }
+
   let tripSeq=2000, notifSeq=0;
-  let trips=[]; // {id,name,phone,pickup,drop,date,time,cargo,weight,distance,fare,status,vehicle,driver,driverPhone,progress,timers:[]}
-  let notifications=[];
-  const RATES={ 'General Freight':12,'Refrigerated Goods':18,'Passenger Transport':8,'Fragile / Electronics':20,'Bulk Materials':10 };
+  let trips=[]; let lastStatusById={};
 
   /* VEHICLE TYPES — one universal fleet list used for every cargo/trip type: Bike, Car Sedan, Car SUV, Truck.
-     Each entry carries a per-km rate and a couple of demo vehicle names shown to the user. */
+     Each entry carries a per-km rate. */
   const VEHICLE_TYPES=[
-    { key:'Bike', label:'Bike', icon:'fa-motorcycle', rate:5, names:['Bajaj Pulsar 150 (GJ01 BK 3321)','TVS Apache RTR (GJ05 BK 9087)'] },
-    { key:'Car Sedan', label:'Car Sedan', icon:'fa-car', rate:9, names:['Maruti Suzuki Dzire (GJ06 PS 8842)','Honda Amaze (GJ01 PS 5521)'] },
-    { key:'Car SUV', label:'Car SUV', icon:'fa-truck-pickup', rate:13, names:['Mahindra Marazzo (GJ27 PS 7765)','Toyota Innova Crysta (GJ05 PS 4432)'] },
-    { key:'Truck', label:'Truck', icon:'fa-truck', rate:16, names:['Tata LPT 1613 (GJ01 AB 4521)','Eicher Pro 2049 (GJ06 GH 3345)'] },
+    { key:'Bike', label:'Bike', icon:'fa-motorcycle', rate:5 },
+    { key:'Car Sedan', label:'Car Sedan', icon:'fa-car', rate:9 },
+    { key:'Car SUV', label:'Car SUV', icon:'fa-truck-pickup', rate:13 },
+    { key:'Truck', label:'Truck', icon:'fa-truck', rate:16 },
   ];
   function vehicleTypeByKey(key){ return VEHICLE_TYPES.find(v=>v.key===key); }
-  function demoVehicleNameFor(key){ const v=vehicleTypeByKey(key); if(!v) return null; return v.names[Math.floor(Math.random()*v.names.length)]; }
-  const DEMO_DRIVERS=[['Rakesh Sharma','+91 98250 11234'],['Vikram Patel','+91 98790 55621'],['Sanjay Rathod','+91 99250 87621'],['Imran Shaikh','+91 97250 44210']];
 
   /* LOGGED-IN USER (simulated — persisted in this browser so the booking form can auto-fill name) */
   let currentUser = (function(){
@@ -458,18 +465,18 @@
     return { name:'Guest User', phone:'' };
   })();
   function saveCurrentUser(){ localStorage.setItem('fleetops-user-profile', JSON.stringify(currentUser)); }
-  function initialsOf(name){ return (name||'U').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase() || 'U'; }
 
   function todayISO(){ return new Date().toISOString().slice(0,10); }
   function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
   function money(n){ return '₹' + (Math.round(n*100)/100).toLocaleString('en-IN'); }
-  function statusClass(s){ return {Requested:'pending',Assigned:'assigned','In Transit':'progress',Completed:'completed',Cancelled:'cancelled'}[s]||'pending'; }
-  function statusIcon(s){ return {Requested:'fa-hourglass-half',Assigned:'fa-truck','In Transit':'fa-road',Completed:'fa-circle-check',Cancelled:'fa-ban'}[s]||'fa-circle'; }
+  function statusClass(s){ return {Requested:'pending',Accepted:'assigned','In Transit':'progress',Completed:'completed',Rejected:'cancelled',Cancelled:'cancelled'}[s]||'pending'; }
+  function statusIcon(s){ return {Requested:'fa-hourglass-half',Accepted:'fa-truck','In Transit':'fa-road',Completed:'fa-circle-check',Rejected:'fa-xmark',Cancelled:'fa-ban'}[s]||'fa-circle'; }
+  function priorityClass(p){ return p.toLowerCase(); } function priorityIcon(p){ return {Low:'fa-arrow-down',Medium:'fa-equals',High:'fa-triangle-exclamation'}[p]||'fa-equals'; }
 
   /* VALIDATION */
   const validators = {
     bt_name: v=>v.trim().length>1, bt_phone: v=>v.trim().length>=7, bt_pickup: v=>v.trim().length>1, bt_drop: v=>v.trim().length>1,
-    bt_date: v=>!!v, bt_time: v=>!!v, bt_cargo: v=>!!v, bt_weight: v=>parseFloat(v)>0, bt_distance: v=>parseFloat(v)>0,
+    bt_date: v=>!!v, bt_time: v=>!!v, bt_cargo: v=>!!v, bt_weight: v=>parseFloat(v)>0, bt_distance: v=>parseFloat(v)>0, bt_notes: v=>v.trim().length>2,
     bt_vehicle: v=>!!v,
   };
   function validateField(el){ const g=el.closest('.input-group'); if(!g||!validators[el.id]) return true; const ok=validators[el.id](el.value); g.classList.remove('valid','invalid'); g.classList.add(ok?'valid':'invalid'); return ok; }
@@ -478,13 +485,13 @@
   function attachLiveValidation(ids,cb){ ids.forEach(id=>{ const el=document.getElementById(id); if(!el) return; const evt=(el.tagName==='SELECT'||el.type==='date'||el.type==='time')?'change':'input'; el.addEventListener(evt, ()=>{ validateField(el); if(cb) cb(); }); el.addEventListener('blur', ()=>{ validateField(el); if(cb) cb(); }); }); }
   function resetValidationState(ids){ ids.forEach(id=>{ const el=document.getElementById(id); const g=el&&el.closest('.input-group'); if(g) g.classList.remove('valid','invalid'); }); }
   function syncSubmitButton(btnId, ids){ const b=document.getElementById(btnId); if(b) b.disabled=!isFormComplete(ids); }
-  const ALL_BOOK_FIELDS=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_time','bt_cargo','bt_weight','bt_distance','bt_vehicle'];
+  const ALL_BOOK_FIELDS=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_time','bt_cargo','bt_weight','bt_distance','bt_vehicle','bt_notes'];
   const CARGO_EXTRA_FIELDS=['bt_time','bt_weight','bt_distance']; // only needed for non-passenger cargo types
   /* Passenger Transport = instant booking: still needs a vehicle type pick (for the fare), but skips
      scheduled time/weight/distance entry. Any other cargo/trip type needs those extra fields too. */
   function currentBookFields(){
     const cargo=document.getElementById('bt_cargo').value;
-    const base=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_cargo'];
+    const base=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_cargo','bt_notes'];
     if(!cargo) return base;
     const withVehicle = base.concat(['bt_vehicle']);
     return cargo==='Passenger Transport' ? withVehicle : withVehicle.concat(CARGO_EXTRA_FIELDS);
@@ -549,7 +556,7 @@
 
   /* LIVE FARE ESTIMATE — shown once a vehicle type is picked (Passenger Transport: as soon as pickup+drop
      give a distance; cargo types: once the auto-calculated distance is available). */
-  function currentFareRate(cargo, vehicleKey){
+  function currentFareRate(vehicleKey){
     const v=vehicleTypeByKey(vehicleKey);
     return v ? v.rate : null;
   }
@@ -561,7 +568,7 @@
     const distance = cargo==='Passenger Transport'
       ? estimateDistance(document.getElementById('bt_pickup').value, document.getElementById('bt_drop').value)
       : parseFloat(document.getElementById('bt_distance').value) || null;
-    const rate = currentFareRate(cargo, vehicleKey);
+    const rate = currentFareRate(vehicleKey);
     if(!distance || !rate){ box.style.display='none'; box.innerHTML=''; return; }
     const fare = Math.round(distance*rate);
     const v=vehicleTypeByKey(vehicleKey);
@@ -574,7 +581,7 @@
   updateCargoFieldsVisibility();
 
   /* NAV */
-  const navItems=document.querySelectorAll('.nav-item[data-page], .dropdown-item[data-page]'), pages=document.querySelectorAll('.page');
+  const pages=document.querySelectorAll('.page');
   function goToPage(name){
     pages.forEach(p=>p.classList.remove('active'));
     const t=document.getElementById('page-'+name); if(t) t.classList.add('active');
@@ -605,6 +612,7 @@
   document.querySelectorAll('.modal-overlay').forEach(ov=> ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('open'); }));
   document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open')); });
 
+  let notifications=[];
   function pushNotif(title){ notifications.unshift({id:++notifSeq,title,time:'just now',read:false}); renderNotifications(); }
   function renderNotifications(){
     const list=document.getElementById('notifList'); const unread=notifications.filter(n=>!n.read).length;
@@ -614,16 +622,20 @@
   }
   document.getElementById('markAllRead').addEventListener('click', ()=>{ notifications.forEach(n=>n.read=true); renderNotifications(); });
 
-  /* BOOK TRIP */
-  document.getElementById('bookForm').addEventListener('submit', e=>{
+  /* PRIORITY PICKER */
+  const priorityPicker=document.getElementById('priorityPicker'); let selectedPriority='Medium';
+  priorityPicker.addEventListener('click', e=>{ const opt=e.target.closest('.priority-opt'); if(!opt) return; priorityPicker.querySelectorAll('.priority-opt').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); selectedPriority=opt.dataset.val; });
+
+  /* BOOK TRIP — creates a real request for the driver console to see */
+  document.getElementById('bookForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const cargo=document.getElementById('bt_cargo').value;
     const isPassenger = cargo==='Passenger Transport';
     const fields = currentBookFields();
     if(!validateForm(fields)){ showToast('Missing information','Please fill all required fields correctly.','error'); return; }
     tripSeq++;
-    let distance, weight, time;
     const chosenVehicleKey = document.getElementById('bt_vehicle').value;
+    let distance, weight, time;
     if(isPassenger){
       distance = estimateDistance(document.getElementById('bt_pickup').value, document.getElementById('bt_drop').value) || 10;
       weight = null;
@@ -633,17 +645,20 @@
       weight = parseFloat(document.getElementById('bt_weight').value);
       time = document.getElementById('bt_time').value;
     }
-    const rate = currentFareRate(cargo, chosenVehicleKey) || 10;
+    const rate = currentFareRate(chosenVehicleKey) || 10;
     const fare = Math.round(distance * rate);
     const vehicleType = vehicleTypeByKey(chosenVehicleKey);
     const t = { id:'TRP-'+tripSeq, name:document.getElementById('bt_name').value.trim(), phone:document.getElementById('bt_phone').value.trim(),
       pickup:document.getElementById('bt_pickup').value.trim(), drop:document.getElementById('bt_drop').value.trim(),
       date:document.getElementById('bt_date').value, time, cargo, weight,
-      distance, fare, status:'Requested',
-      vehicleType: vehicleType ? vehicleType.label : null, vehicle:null, driver:null, driverPhone:null, progress:0, _timers:[] };
+      distance, vehicleType: vehicleType ? vehicleType.label : null,
+      priority:selectedPriority, notes:document.getElementById('bt_notes').value.trim(), fare, status:'Requested', progress:0,
+      createdAt: Date.now() };
     trips.unshift(t);
+    await storeSet(K_REQUESTS, trips);
+    lastStatusById[t.id]='Requested';
     currentUser.phone = t.phone; saveCurrentUser();
-    pushNotif(`Trip booked: ${t.id}`);
+    pushNotif(`Trip requested: ${t.id}`);
     document.getElementById('tripConfirmedDetails').innerHTML = `
       <div class="detail-row"><span class="k"><i class="fas fa-hashtag"></i> Trip ID</span><span class="v">${t.id}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-route"></i> Route</span><span class="v">${t.pickup} → ${t.drop}</span></div>
@@ -654,47 +669,16 @@
     document.getElementById('goTrackBtn').dataset.id = t.id;
     openModal('modalTripConfirmed');
     e.target.reset(); resetValidationState(ALL_BOOK_FIELDS); updateCargoFieldsVisibility(); prefillBookForm();
-    simulateAssignment(t.id, { instant:isPassenger, vehicleKey: chosenVehicleKey||null });
+    priorityPicker.querySelectorAll('.priority-opt').forEach(o=>o.classList.remove('selected')); priorityPicker.querySelector('.sel-medium').classList.add('selected'); selectedPriority='Medium';
     renderAll();
   });
   document.getElementById('bookFormReset').addEventListener('click', ()=>{ document.getElementById('bookForm').reset(); resetValidationState(ALL_BOOK_FIELDS); updateCargoFieldsVisibility(); prefillBookForm(); });
-  document.getElementById('goTrackBtn').addEventListener('click', function(){ closeModal('modalTripConfirmed'); goToPage('trackTrip'); const sel=document.getElementById('trackTripSelect'); sel.value=this.dataset.id; renderTrackPage(); });
-
-  /* SIMULATED ASSIGNMENT + LIVE TRACKING (demo only — no real backend/GPS) */
-  function simulateAssignment(tripId, options){
-    options = options || {};
-    const assignDelay = options.instant ? 400 : 3500;
-    const assignTimer = setTimeout(()=>{
-      const t = trips.find(x=>x.id===tripId); if(!t || t.status!=='Requested') return;
-      t.vehicle = demoVehicleNameFor(options.vehicleKey) || 'Assigned vehicle';
-      const dr = DEMO_DRIVERS[Math.floor(Math.random()*DEMO_DRIVERS.length)];
-      t.driver = dr[0]; t.driverPhone = dr[1]; t.status='Assigned';
-      pushNotif(`${t.driver} assigned to ${t.id}`); showToast(options.instant?'Instant booking confirmed':'Driver assigned', `${t.driver} will handle ${t.id}.`, 'success');
-      renderAll();
-      const transitTimer = setTimeout(()=>{
-        const tt = trips.find(x=>x.id===tripId); if(!tt || tt.status!=='Assigned') return;
-        tt.status='In Transit'; pushNotif(`${tt.id} is now In Transit`); showToast('Trip started', `${tt.id} is on the way.`, 'info');
-        renderAll();
-        const progressInterval = setInterval(()=>{
-          const tp = trips.find(x=>x.id===tripId); if(!tp || tp.status!=='In Transit'){ clearInterval(progressInterval); return; }
-          tp.progress = Math.min(100, tp.progress + (100/24));
-          if(tp.progress>=100){
-            tp.status='Completed'; tp.progress=100; clearInterval(progressInterval);
-            pushNotif(`Trip completed: ${tp.id}`); showToast('Trip completed', `${tp.id} has arrived at ${tp.drop}.`, 'success');
-          }
-          renderAll();
-        }, 1500);
-        trips.find(x=>x.id===tripId)._timers.push(progressInterval);
-      }, 4000);
-      trips.find(x=>x.id===tripId)._timers.push(transitTimer);
-    }, assignDelay);
-    trips.find(x=>x.id===tripId)._timers.push(assignTimer);
-  }
+  document.getElementById('goTrackBtn').addEventListener('click', function(){ closeModal('modalTripConfirmed'); goToPage('trackTrip'); const sel=document.getElementById('trackTripSelect'); sel.value=this.dataset.id; renderTrackContent(); });
 
   /* TRACK PAGE */
   function renderTrackPage(){
     const sel=document.getElementById('trackTripSelect');
-    const trackable = trips.filter(t=> t.status!=='Cancelled');
+    const trackable = trips.filter(t=> t.status!=='Cancelled' && t.status!=='Rejected');
     const cur = sel.value;
     sel.innerHTML = trackable.length ? trackable.map(t=>`<option value="${t.id}">${t.id} · ${t.pickup} → ${t.drop}</option>`).join('') : `<option value="">No trips yet — book one first</option>`;
     if(trackable.some(t=>t.id===cur)) sel.value=cur;
@@ -707,13 +691,13 @@
     const t = trips.find(x=>x.id===id);
     if(!t){ wrap.innerHTML = `<div class="card"><div class="empty-state"><i class="fas fa-location-crosshairs"></i><p class="main">Nothing to track yet</p><p class="sub">Book a trip to see live tracking here.</p></div></div>`; return; }
     const steps = [
-      {key:'Requested', label:'Trip Requested', sub:'Booking received'},
-      {key:'Assigned', label:'Driver Assigned', sub: t.driver ? t.driver+' · '+t.vehicle : 'Finding a driver...'},
+      {key:'Requested', label:'Trip Requested', sub:'Sent to the driver console'},
+      {key:'Accepted', label:'Driver Accepted', sub: t.driverName ? t.driverName+' · '+t.vehicleReg : (t.status==='Rejected' ? 'Rejected by driver' : 'Waiting for a driver to accept...')},
       {key:'In Transit', label:'In Transit', sub: t.status==='In Transit' ? 'On the way to '+t.drop : (t.status==='Completed' ? 'Delivered' : 'Not started yet')},
       {key:'Completed', label:'Completed', sub: t.status==='Completed' ? 'Delivered to '+t.drop : 'Pending'},
     ];
-    const order=['Requested','Assigned','In Transit','Completed'];
-    const curIdx = t.status==='Cancelled' ? -1 : order.indexOf(t.status);
+    const order=['Requested','Accepted','In Transit','Completed'];
+    const curIdx = (t.status==='Cancelled'||t.status==='Rejected') ? -1 : order.indexOf(t.status);
     const timelineHtml = `<ul class="timeline">${steps.map((s,i)=>{
       const cls = i<curIdx ? 'done' : (i===curIdx ? 'current' : '');
       const icon = i<curIdx ? 'fa-check' : (i===curIdx ? 'fa-location-dot' : 'fa-circle');
@@ -735,6 +719,8 @@
           <div class="track-eta"><p class="big">${t.status==='Completed' ? 'Arrived' : remKm+' km left'}</p><p class="lbl">${t.status==='Completed' ? 'Trip delivered' : '~'+etaMin+' min remaining · demo simulation'}</p></div>
         </div>
       </div>`;
+    } else if(t.status==='Rejected'){
+      mapHtml = `<div class="card"><div class="no-active"><i class="fas fa-circle-xmark"></i><p style="font-weight:700;">This request was rejected by the driver</p><p style="font-size:.82rem;">Try booking again with different details.</p></div></div>`;
     } else {
       mapHtml = `<div class="card"><div class="no-active"><i class="fas fa-satellite-dish"></i><p style="font-weight:700;">Live tracking starts once the trip is In Transit</p><p style="font-size:.82rem;">Right now: <strong>${t.status}</strong></p></div></div>`;
     }
@@ -744,9 +730,11 @@
         <div class="card"><div class="card-header"><h3><i class="fas fa-timeline"></i> Trip Progress</h3></div>${timelineHtml}</div>
         <div class="card">
           <div class="card-header"><h3><i class="fas fa-id-card"></i> Assignment</h3></div>
-          <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Vehicle</span><span class="v">${t.vehicle||'Not yet assigned'}</span></div>
-          <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Driver</span><span class="v">${t.driver||'Not yet assigned'}</span></div>
+          <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Vehicle</span><span class="v">${t.vehicleReg ? t.vehicleReg+' — '+t.vehicleName : 'Not yet assigned'}</span></div>
+          <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Driver</span><span class="v">${t.driverName||'Not yet assigned'}</span></div>
           <div class="detail-row"><span class="k"><i class="fas fa-phone"></i> Contact</span><span class="v">${t.driverPhone||'—'}</span></div>
+          <div class="detail-row"><span class="k"><i class="fas fa-id-badge"></i> License</span><span class="v">${t.driverLicense ? t.driverLicense+' ('+t.driverLicenseCategory+')' : '—'}</span></div>
+          <div class="detail-row"><span class="k"><i class="fas fa-shield-halved"></i> Safety Score</span><span class="v">${t.driverSafetyScore ?? '—'}</span></div>
           <div class="detail-row"><span class="k"><i class="fas fa-road"></i> Distance</span><span class="v">${t.distance} km</span></div>
           <div class="detail-row"><span class="k"><i class="fas fa-indian-rupee-sign"></i> Fare</span><span class="v">${money(t.fare)}</span></div>
         </div>
@@ -763,21 +751,22 @@
       const hay = `${t.id} ${t.name} ${t.pickup} ${t.drop}`.toLowerCase();
       return (!search||hay.includes(search)) && (statusF==='all'||t.status===statusF);
     });
+    const pOrder={High:0,Medium:1,Low:2};
     if(sort==='newest') list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
     if(sort==='oldest') list=[...list].sort((a,b)=>a.date.localeCompare(b.date));
-    if(sort==='fare') list=[...list].sort((a,b)=>b.fare-a.fare);
+    if(sort==='priority') list=[...list].sort((a,b)=>pOrder[a.priority]-pOrder[b.priority]);
     const body=document.getElementById('historyBody');
     if(list.length===0){ body.innerHTML=''; document.getElementById('historyEmpty').innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p class="main">${trips.length===0?'No trips booked yet':'No trips match your filters'}</p><p class="sub">${trips.length===0?'Book your first trip to see it here.':'Try clearing the search or status filter.'}</p></div>`; return; }
     document.getElementById('historyEmpty').innerHTML='';
     body.innerHTML = list.map(t=>`<tr>
       <td><strong>${t.id}</strong></td><td style="font-size:.78rem;">${t.pickup} → ${t.drop}</td>
-      <td style="font-size:.78rem;">${t.cargo}</td>
-      <td style="font-size:.78rem;">${t.vehicle||'<span style="color:var(--text-muted)">Pending</span>'}${t.vehicleType?` <span style="color:var(--text-muted)">(${t.vehicleType})</span>`:''}</td>
-      <td style="font-size:.78rem;">${t.driver||'<span style="color:var(--text-muted)">Pending</span>'}</td>
+      <td style="font-size:.78rem;">${t.vehicleReg||'<span style="color:var(--text-muted)">Pending</span>'}</td>
+      <td style="font-size:.78rem;">${t.driverName||'<span style="color:var(--text-muted)">Pending</span>'}</td>
+      <td><span class="priority-tag ${priorityClass(t.priority)}"><i class="fas ${priorityIcon(t.priority)}"></i> ${t.priority}</span></td>
       <td><span class="badge ${statusClass(t.status)}"><i class="fas ${statusIcon(t.status)}"></i> ${t.status}</span></td>
       <td style="font-size:.78rem;">${fmtDate(t.date)}</td><td>${money(t.fare)}</td>
       <td><div class="row-actions"><button class="row-icon-btn" title="View" data-view="${t.id}"><i class="fas fa-eye"></i></button>
-      ${(t.status==='Requested'||t.status==='Assigned') ? `<button class="row-icon-btn" title="Cancel" data-cancel="${t.id}"><i class="fas fa-ban"></i></button>`:''}</div></td>
+      ${(t.status==='Requested'||t.status==='Accepted') ? `<button class="row-icon-btn" title="Cancel" data-cancel="${t.id}"><i class="fas fa-ban"></i></button>`:''}</div></td>
     </tr>`).join('');
     body.querySelectorAll('[data-view]').forEach(b=> b.addEventListener('click', ()=> viewTrip(b.dataset.view)));
     body.querySelectorAll('[data-cancel]').forEach(b=> b.addEventListener('click', ()=>{
@@ -788,9 +777,9 @@
   }
   document.getElementById('th_search').addEventListener('input', renderHistoryTable);
   ['th_statusFilter','th_sort'].forEach(id=> document.getElementById(id).addEventListener('change', renderHistoryTable));
-  document.getElementById('cancelTripBtn').addEventListener('click', function(){
+  document.getElementById('cancelTripBtn').addEventListener('click', async function(){
     const t=trips.find(x=>x.id===this.dataset.id);
-    if(t){ t.status='Cancelled'; (t._timers||[]).forEach(id=>{clearTimeout(id); clearInterval(id);}); pushNotif('Trip cancelled: '+t.id); showToast('Trip cancelled', t.id+' has been cancelled.', 'info'); }
+    if(t){ t.status='Cancelled'; await storeSet(K_REQUESTS, trips); pushNotif('Trip cancelled: '+t.id); showToast('Trip cancelled', t.id+' has been cancelled.', 'info'); }
     closeModal('modalCancelTrip'); renderAll();
   });
 
@@ -800,14 +789,16 @@
       <div class="detail-row"><span class="k"><i class="fas fa-hashtag"></i> Trip ID</span><span class="v">${t.id}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-route"></i> Route</span><span class="v">${t.pickup} → ${t.drop}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-calendar-days"></i> Date &amp; Time</span><span class="v">${fmtDate(t.date)} · ${t.time}</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-box"></i> Cargo Type</span><span class="v">${t.cargo}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Vehicle Type</span><span class="v">${t.vehicleType||'—'}</span></div>
       ${t.weight!=null?`<div class="detail-row"><span class="k"><i class="fas fa-weight-hanging"></i> Weight</span><span class="v">${t.weight} kg</span></div>`:''}
       <div class="detail-row"><span class="k"><i class="fas fa-road"></i> Distance</span><span class="v">${t.distance} km</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-car-side"></i> Vehicle Type</span><span class="v">${t.vehicleType||'Not assigned'}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-indian-rupee-sign"></i> Fare</span><span class="v">${money(t.fare)}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-signal"></i> Priority</span><span class="v"><span class="priority-tag ${priorityClass(t.priority)}"><i class="fas ${priorityIcon(t.priority)}"></i> ${t.priority}</span></span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-circle-info"></i> Status</span><span class="v"><span class="badge ${statusClass(t.status)}"><i class="fas ${statusIcon(t.status)}"></i> ${t.status}</span></span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Vehicle</span><span class="v">${t.vehicle||'Not assigned'}</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Driver</span><span class="v">${t.driver||'Not assigned'}</span></div>`;
+      <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Vehicle</span><span class="v">${t.vehicleReg ? t.vehicleReg+' — '+t.vehicleName : 'Not assigned'}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Driver</span><span class="v">${t.driverName||'Not assigned'}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-phone"></i> Driver Contact</span><span class="v">${t.driverPhone||'—'}</span></div>
+      ${t.notes?`<div class="detail-row"><span class="k"><i class="fas fa-note-sticky"></i> Notes</span><span class="v">${t.notes}</span></div>`:''}`;
     openModal('modalTripDetails');
   }
 
@@ -815,9 +806,9 @@
   function chartRow(label,count,total,color,icon){ const pct=total?Math.round((count/total)*100):0; return `<div class="chart-row"><div class="chart-label"><i class="fas ${icon}" style="color:${color};"></i>${label}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%; background:${color};"></div></div><div class="chart-value">${count} · ${pct}%</div></div>`; }
   function renderDashboard(){
     document.getElementById('dateLine').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-    const total=trips.length, active=trips.filter(t=>t.status==='Assigned'||t.status==='In Transit').length;
+    const total=trips.length, active=trips.filter(t=>t.status==='Accepted'||t.status==='In Transit').length;
     const completed=trips.filter(t=>t.status==='Completed').length;
-    const spend=trips.filter(t=>t.status!=='Cancelled').reduce((s,t)=>s+t.fare,0);
+    const spend=trips.filter(t=>t.status!=='Cancelled'&&t.status!=='Rejected').reduce((s,t)=>s+t.fare,0);
     document.getElementById('statsGrid').innerHTML = `
       <div class="stat-card"><div class="stat-icon" style="background:var(--info-bg); color:var(--info);"><i class="fas fa-route"></i></div><h3>${total}</h3><p class="label">Total Trips</p></div>
       <div class="stat-card"><div class="stat-icon" style="background:var(--warning-bg); color:var(--warning);"><i class="fas fa-road"></i></div><h3>${active}</h3><p class="label">Active Trips</p></div>
@@ -833,13 +824,13 @@
         <h2>${active_t.id}</h2>
         <div class="route"><i class="fas fa-location-dot"></i> ${active_t.pickup} <i class="fas fa-arrow-right-long"></i> ${active_t.drop}</div>
         <div class="meta-row">
-          <div><p>Vehicle</p><p>${active_t.vehicle}</p></div><div><p>Driver</p><p>${active_t.driver}</p></div>
+          <div><p>Vehicle</p><p>${active_t.vehicleReg||'—'}</p></div><div><p>Driver</p><p>${active_t.driverName||'—'}</p></div>
           <div><p>Progress</p><p>${pct}%</p></div><div><p>Fare</p><p>${money(active_t.fare)}</p></div>
         </div>
         <div class="actions"><button class="btn btn-ghost" onclick="window.__goTrack('${active_t.id}')"><i class="fas fa-location-crosshairs"></i> Track Live</button></div>
       </div>`;
     } else {
-      wrap.innerHTML = `<div class="card no-active"><i class="fas fa-moon"></i><p style="font-weight:700;">No trip in transit right now</p><p style="font-size:.82rem;">Book a trip to see it tracked live here.</p></div>`;
+      wrap.innerHTML = `<div class="card no-active"><i class="fas fa-moon"></i><p style="font-weight:700;">No trip in transit right now</p><p style="font-size:.82rem;">Book a trip and wait for driver acceptance to see it tracked live here.</p></div>`;
     }
 
     const recent=[...trips].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
@@ -849,9 +840,9 @@
       <td style="font-size:.78rem;">${fmtDate(t.date)}</td></tr>`).join('') || `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No trips yet.</td></tr>`;
 
     document.getElementById('statusChart').innerHTML = total ? [
-      {label:'Requested',color:'var(--warning)',icon:'fa-hourglass-half'},{label:'Assigned',color:'var(--info)',icon:'fa-truck'},
+      {label:'Requested',color:'var(--warning)',icon:'fa-hourglass-half'},{label:'Accepted',color:'var(--info)',icon:'fa-truck'},
       {label:'In Transit',color:'var(--info)',icon:'fa-road'},{label:'Completed',color:'var(--success)',icon:'fa-circle-check'},
-      {label:'Cancelled',color:'var(--danger)',icon:'fa-ban'},
+      {label:'Rejected',color:'var(--danger)',icon:'fa-xmark'},{label:'Cancelled',color:'var(--danger)',icon:'fa-ban'},
     ].map(s=>chartRow(s.label, trips.filter(t=>t.status===s.label).length, total, s.color, s.icon)).join('')
       : `<div class="empty-state" style="padding:1rem 0;"><i class="fas fa-chart-simple"></i><p class="main">No trips yet</p><p class="sub">Book your first trip to see analytics here.</p></div>`;
     document.getElementById('totalSpend').textContent = money(spend);
@@ -862,9 +853,9 @@
   /* PROFILE */
   function renderProfile(){
     const latest = trips[0];
-    const name = currentUser.name;
-    const phone = currentUser.phone || (latest ? latest.phone : null);
-    const initials = initialsOf(name);
+    const name = latest ? latest.name : 'Guest User';
+    const phone = latest ? latest.phone : null;
+    const initials = name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     document.getElementById('profName').textContent = name;
     document.getElementById('profPhone').textContent = phone || 'Not set — book a trip to save your details';
     document.getElementById('profAvatar').textContent = initials;
@@ -872,23 +863,12 @@
     document.getElementById('chipName').textContent = name;
     document.getElementById('ps_total').textContent = trips.length;
     document.getElementById('ps_completed').textContent = trips.filter(t=>t.status==='Completed').length;
-    document.getElementById('ps_spend').textContent = money(trips.filter(t=>t.status!=='Cancelled').reduce((s,t)=>s+t.fare,0));
+    document.getElementById('ps_spend').textContent = money(trips.filter(t=>t.status!=='Cancelled'&&t.status!=='Rejected').reduce((s,t)=>s+t.fare,0));
   }
   document.querySelectorAll('.mini-switch[data-pref]').forEach(sw=>{
     sw.addEventListener('click', ()=>{ sw.classList.toggle('on'); showToast('Preference updated', sw.classList.contains('on')?'Enabled':'Disabled', 'info'); });
   });
   document.getElementById('darkPref').addEventListener('click', function(){ setTheme(this.classList.contains('on') ? 'light' : 'dark'); });
-
-  /* SIGN OUT */
-  document.getElementById('signOutBtn').addEventListener('click', function(){ document.getElementById('userPanel').classList.remove('open'); openModal('modalSignOut'); });
-  document.getElementById('confirmSignOutBtn').addEventListener('click', function(){
-    currentUser = { name:'Guest User', phone:'' };
-    localStorage.removeItem('fleetops-user-profile');
-    closeModal('modalSignOut');
-    showToast('Signed out', 'Your profile details have been cleared.', 'info');
-    document.getElementById('bookForm').reset(); resetValidationState(ALL_BOOK_FIELDS); updateCargoFieldsVisibility(); prefillBookForm();
-    renderAll(); goToPage('dashboard');
-  });
 
   /* GLOBAL SEARCH */
   document.getElementById('globalSearch').addEventListener('input', function(){
@@ -900,8 +880,44 @@
   setInterval(()=>{ document.getElementById('clockLine').textContent = new Date().toLocaleTimeString('en-IN'); }, 1000);
 
   function renderAll(){ renderDashboard(); renderHistoryTable(); renderTrackPage(); renderProfile(); }
-  renderNotifications();
-  renderAll();
+
+  /* ================= SYNC WITH SHARED STORAGE ================= */
+  async function loadFromStorage(){
+    const remote = await storeGet(K_REQUESTS);
+    if(!remote) return;
+    remote.forEach(r=>{
+      const prev = lastStatusById[r.id];
+      if(prev && prev!==r.status){
+        if(r.status==='Accepted') { pushNotif(r.id+' accepted by '+(r.driverName||'a driver')+'.'); showToast('Driver accepted!', r.id+' — '+(r.driverName||'')+' is on the way.', 'success'); }
+        else if(r.status==='Rejected'){ pushNotif(r.id+' was rejected by the driver.'); showToast('Request rejected', r.id+' was not accepted.', 'error'); }
+        else if(r.status==='In Transit'){ pushNotif(r.id+' is now In Transit.'); showToast('Trip started', r.id+' is on the way.', 'info'); }
+        else if(r.status==='Completed'){ pushNotif(r.id+' delivered.'); showToast('Trip completed', r.id+' has arrived.', 'success'); }
+      }
+      lastStatusById[r.id]=r.status;
+    });
+    trips = remote;
+  }
+
+  /* client-side cosmetic progress animation while a trip is In Transit */
+  async function tickProgress(){
+    let changed=false;
+    trips.forEach(t=>{
+      if(t.status==='In Transit'){
+        const next = Math.min(95, (t.progress||0) + 4);
+        if(next!==t.progress){ t.progress=next; changed=true; }
+      }
+    });
+    if(changed) await storeSet(K_REQUESTS, trips);
+  }
+
+  async function pollLoop(){ await loadFromStorage(); await tickProgress(); renderAll(); }
+
+  (async function init(){
+    renderNotifications();
+    await loadFromStorage();
+    renderAll();
+    setInterval(pollLoop, 3000);
+  })();
 })();
 </script>
 </body>
