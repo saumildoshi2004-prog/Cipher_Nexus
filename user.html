@@ -132,8 +132,6 @@
   .badge.pending{background:var(--warning-bg);color:var(--warning);} .badge.assigned{background:var(--info-bg);color:var(--info);}
   .badge.progress{background:var(--info-bg);color:var(--info);} .badge.completed{background:var(--success-bg);color:var(--success);}
   .badge.cancelled{background:var(--danger-bg);color:var(--danger);}
-  .priority-tag{font-size:.68rem;font-weight:800;padding:.15rem .55rem;border-radius:6px;display:inline-flex;align-items:center;gap:.3rem;} .priority-tag i{font-size:.62rem;}
-  .priority-tag.high{background:var(--danger-bg);color:var(--danger);} .priority-tag.medium{background:var(--warning-bg);color:var(--warning);} .priority-tag.low{background:var(--success-bg);color:var(--success);}
   .filter-bar{display:flex;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;}
   .filter-bar select,.filter-bar input[type="text"]{padding:.6rem 1rem;border-radius:14px;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--text-primary);font-size:.82rem;font-family:inherit;outline:none;}
   .filter-bar select:focus,.filter-bar input:focus{border-color:var(--input-focus);box-shadow:var(--input-shadow);}
@@ -154,11 +152,6 @@
   .input-group.valid input,.input-group.valid select{border-color:var(--success);} .input-group.valid .validation-icon.fa-check-circle{opacity:1;}
   .input-group.invalid input,.input-group.invalid select,.input-group.invalid textarea{border-color:var(--danger);} .input-group.invalid .validation-icon.fa-circle-exclamation{opacity:1;}
   .error-msg{font-size:.72rem;color:var(--danger);font-weight:600;display:none;align-items:center;gap:.35rem;margin-top:.1rem;} .error-msg i{font-size:.7rem;} .input-group.invalid .error-msg{display:flex;}
-  .priority-picker{display:flex;gap:.6rem;}
-  .priority-opt{flex:1;text-align:center;padding:.7rem .5rem;border-radius:14px;border:1.5px solid var(--input-border);cursor:pointer;font-size:.78rem;font-weight:700;transition:.15s;display:flex;align-items:center;justify-content:center;gap:.4rem;} .priority-opt i{font-size:.82rem;}
-  .priority-opt.sel-low.selected{background:var(--success-bg);border-color:var(--success);color:var(--success);}
-  .priority-opt.sel-medium.selected{background:var(--warning-bg);border-color:var(--warning);color:var(--warning);}
-  .priority-opt.sel-high.selected{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
   .modal-overlay{position:fixed;inset:0;background:rgba(6,14,20,0.55);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;visibility:hidden;transition:.2s;} .modal-overlay.open{opacity:1;visibility:visible;}
   .modal-box{background:var(--card-bg-solid);border-radius:28px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);transform:scale(.94) translateY(10px);transition:.22s cubic-bezier(.34,1.1,.64,1);border:1px solid var(--card-border);}
   .modal-overlay.open .modal-box{transform:scale(1) translateY(0);} .modal-box.wide{max-width:760px;}
@@ -206,7 +199,7 @@
   .track-eta .big{font-size:1.9rem;font-weight:800;} .track-eta .lbl{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
   @media (max-width:1080px){.stats-grid{grid-template-columns:repeat(2,1fr);} .grid-2{grid-template-columns:1fr;} .quick-grid{grid-template-columns:repeat(2,1fr);} .form-grid{grid-template-columns:1fr;}}
   @media (max-width:860px){.sidebar{transform:translateX(-100%);box-shadow:20px 0 60px rgba(0,0,0,.3);} .sidebar.open{transform:translateX(0);} .sidebar-close{display:flex;position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,0.08);border:none;color:#fff;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;cursor:pointer;} .main{margin-left:0;} .hamburger{display:flex;} .search-box{display:none;} .stats-grid{grid-template-columns:1fr 1fr;} .quick-grid{grid-template-columns:1fr 1fr;}}
-  @media (max-width:480px){.content{padding:1.2rem 1rem 2.5rem;} .topbar{padding:.9rem 1rem;} .stats-grid{grid-template-columns:1fr;} .quick-grid{grid-template-columns:1fr;} .active-trip .meta-row{gap:1rem;} .user-chip .info{display:none;} .priority-picker{flex-direction:column;}}
+  @media (max-width:480px){.content{padding:1.2rem 1rem 2.5rem;} .topbar{padding:.9rem 1rem;} .stats-grid{grid-template-columns:1fr;} .quick-grid{grid-template-columns:1fr;} .active-trip .meta-row{gap:1rem;} .user-chip .info{display:none;}}
   .sidebar-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50;} .sidebar-scrim.show{display:block;}
 </style>
 </head>
@@ -247,6 +240,8 @@
           <div class="user-chip" id="userChipBtn"><div class="avatar" id="avatarInit">U</div><div class="info"><p id="chipName">Guest User</p><p>Customer</p></div><i class="fas fa-chevron-down" style="font-size:.7rem;color:var(--text-muted)"></i></div>
           <div class="dropdown-panel" id="userPanel">
             <div class="dropdown-item" data-page="profile" style="display:flex;align-items:center;gap:.7rem;padding:.65rem .7rem;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;"><i class="fas fa-user" style="width:16px;color:var(--text-muted);"></i> My Profile</div>
+            <div style="height:1px;background:var(--divider);margin:.4rem .2rem;"></div>
+            <div class="dropdown-item" id="signOutBtn" style="display:flex;align-items:center;gap:.7rem;padding:.65rem .7rem;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--danger);"><i class="fas fa-right-from-bracket" style="width:16px;"></i> Sign Out</div>
           </div>
         </div>
       </div>
@@ -288,7 +283,7 @@
           <form id="bookForm" novalidate>
             <div class="form-grid">
               <div class="input-group" data-req="true"><label><i class="fas fa-user"></i> Your Name <span class="req-star">*</span></label>
-                <div class="field-wrap"><input type="text" id="bt_name" required placeholder="e.g. Priya Mehta" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <div class="field-wrap"><input type="text" id="bt_name" required readonly placeholder="e.g. Priya Mehta" style="cursor:not-allowed; background:var(--badge-bg);" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
                 <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please enter your name.</span></div>
               <div class="input-group" data-req="true"><label><i class="fas fa-phone"></i> Phone Number <span class="req-star">*</span></label>
                 <div class="field-wrap"><input type="text" id="bt_phone" required placeholder="e.g. +91 98765 43210" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
@@ -302,28 +297,27 @@
               <div class="input-group" data-req="true"><label><i class="fas fa-calendar-days"></i> Date <span class="req-star">*</span></label>
                 <div class="field-wrap"><input type="date" id="bt_date" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
                 <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please pick a valid date.</span></div>
-              <div class="input-group" data-req="true"><label><i class="fas fa-clock"></i> Pickup Time <span class="req-star">*</span></label>
-                <div class="field-wrap"><input type="time" id="bt_time" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
-                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please pick a time.</span></div>
               <div class="input-group has-select" data-req="true"><label><i class="fas fa-box"></i> Cargo / Trip Type <span class="req-star">*</span></label>
                 <div class="field-wrap"><select id="bt_cargo" required><option value="">— select —</option><option>General Freight</option><option>Refrigerated Goods</option><option>Passenger Transport</option><option>Fragile / Electronics</option><option>Bulk Materials</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
                 <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please select a cargo type.</span></div>
-              <div class="input-group" data-req="true"><label><i class="fas fa-weight-hanging"></i> Weight (kg) <span class="req-star">*</span></label>
-                <div class="field-wrap"><input type="number" id="bt_weight" required min="1" placeholder="e.g. 500" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
-                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a valid weight.</span></div>
-              <div class="input-group" data-req="true"><label><i class="fas fa-route"></i> Estimated Distance (km) <span class="req-star">*</span></label>
-                <div class="field-wrap"><input type="number" id="bt_distance" required min="1" placeholder="e.g. 265" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
-                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a valid distance.</span></div>
-              <div class="input-group full"><label><i class="fas fa-signal"></i> Priority</label>
-                <div class="priority-picker" id="priorityPicker">
-                  <div class="priority-opt sel-low" data-val="Low"><i class="fas fa-arrow-down"></i> Low</div>
-                  <div class="priority-opt sel-medium selected" data-val="Medium"><i class="fas fa-equals"></i> Medium</div>
-                  <div class="priority-opt sel-high" data-val="High"><i class="fas fa-triangle-exclamation"></i> High</div>
+              <div class="input-group full" id="instantBookNote" style="display:none;">
+                <div style="background:var(--info-bg); color:var(--info); padding:.8rem 1rem; border-radius:12px; font-size:.83rem; font-weight:600; display:flex; align-items:center; gap:.6rem;">
+                  <i class="fas fa-bolt"></i> Passenger Transport is booked instantly — no scheduled pickup time, weight or distance entry needed. Just pick a vehicle below and your fare is shown right away.
                 </div>
               </div>
-              <div class="input-group full" data-req="true"><label><i class="fas fa-note-sticky"></i> Notes <span class="req-star">*</span></label>
-                <div class="field-wrap"><textarea id="bt_notes" required placeholder="Any special instructions for this trip..."></textarea></div>
-                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please add a note for this trip.</span></div>
+              <div class="input-group" data-req="true" id="grp_time"><label><i class="fas fa-clock"></i> Pickup Time <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="time" id="bt_time" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please pick a time.</span></div>
+              <div class="input-group" data-req="true" id="grp_weight"><label><i class="fas fa-weight-hanging"></i> Weight (kg) <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="bt_weight" required min="1" placeholder="e.g. 500" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a valid weight.</span></div>
+              <div class="input-group" data-req="true" id="grp_distance"><label><i class="fas fa-route"></i> Estimated Distance (km) <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="bt_distance" required min="1" placeholder="Auto-calculated from pickup & drop" readonly style="cursor:not-allowed; background:var(--badge-bg);" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Fill pickup &amp; drop locations to auto-calculate distance.</span></div>
+              <div class="input-group has-select" data-req="true" id="grp_vehicle"><label><i class="fas fa-truck"></i> Select Vehicle Type <span class="req-star">*</span></label>
+                <div class="field-wrap"><select id="bt_vehicle" required><option value="">— select —</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Please select a vehicle.</span></div>
+              <div class="input-group full" id="farePreview" style="display:none;"></div>
             </div>
             <div style="display:flex; gap:.8rem; justify-content:flex-end; margin-top:.4rem;">
               <button type="button" class="btn btn-outline" id="bookFormReset"><i class="fas fa-rotate-left"></i> Clear</button>
@@ -350,9 +344,9 @@
           <div class="filter-bar">
             <input type="text" id="th_search" placeholder="Search by name or route..." style="flex:1; min-width:220px;" />
             <select id="th_statusFilter"><option value="all">All statuses</option><option value="Requested">Requested</option><option value="Assigned">Assigned</option><option value="In Transit">In Transit</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select>
-            <select id="th_sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="priority">By priority</option></select>
+            <select id="th_sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="fare">By fare (high–low)</option></select>
           </div>
-          <div class="table-wrap"><table><thead><tr><th>Trip</th><th>Route</th><th>Vehicle</th><th>Driver</th><th>Priority</th><th>Status</th><th>Date</th><th>Fare</th><th>Actions</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Trip</th><th>Route</th><th>Cargo / Trip Type</th><th>Vehicle</th><th>Driver</th><th>Status</th><th>Date</th><th>Fare</th><th>Actions</th></tr></thead><tbody id="historyBody"></tbody></table></div>
           <div id="historyEmpty"></div>
         </div>
       </section>
@@ -421,6 +415,15 @@
   </div>
 </div>
 
+<!-- Sign Out -->
+<div class="modal-overlay" id="modalSignOut">
+  <div class="modal-box">
+    <div class="modal-head"><h3><i class="fas fa-right-from-bracket"></i> Sign Out</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
+    <div class="modal-body"><div class="confirm-icon warn"><i class="fas fa-right-from-bracket"></i></div><p style="font-size:.92rem; color:var(--text-secondary); line-height:1.6;">Are you sure you want to sign out? You'll need to re-enter your details next time you book a trip.</p></div>
+    <div class="modal-foot"><button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-danger" id="confirmSignOutBtn"><i class="fas fa-right-from-bracket"></i> Sign Out</button></div>
+  </div>
+</div>
+
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
@@ -433,23 +436,41 @@
 
   /* STATE — nothing pre-filled */
   let tripSeq=2000, notifSeq=0;
-  let trips=[]; // {id,name,phone,pickup,drop,date,time,cargo,weight,distance,priority,notes,fare,status,vehicle,driver,driverPhone,progress,timers:[]}
+  let trips=[]; // {id,name,phone,pickup,drop,date,time,cargo,weight,distance,fare,status,vehicle,driver,driverPhone,progress,timers:[]}
   let notifications=[];
   const RATES={ 'General Freight':12,'Refrigerated Goods':18,'Passenger Transport':8,'Fragile / Electronics':20,'Bulk Materials':10 };
-  const DEMO_VEHICLES=['Tata LPT 1613 (GJ01 AB 4521)','Ashok Leyland Dost (GJ05 CD 7723)','Mahindra Bolero Pickup (GJ27 EF 9182)','Eicher Pro 2049 (GJ06 GH 3345)'];
+
+  /* VEHICLE TYPES — one universal fleet list used for every cargo/trip type: Bike, Car Sedan, Car SUV, Truck.
+     Each entry carries a per-km rate and a couple of demo vehicle names shown to the user. */
+  const VEHICLE_TYPES=[
+    { key:'Bike', label:'Bike', icon:'fa-motorcycle', rate:5, names:['Bajaj Pulsar 150 (GJ01 BK 3321)','TVS Apache RTR (GJ05 BK 9087)'] },
+    { key:'Car Sedan', label:'Car Sedan', icon:'fa-car', rate:9, names:['Maruti Suzuki Dzire (GJ06 PS 8842)','Honda Amaze (GJ01 PS 5521)'] },
+    { key:'Car SUV', label:'Car SUV', icon:'fa-truck-pickup', rate:13, names:['Mahindra Marazzo (GJ27 PS 7765)','Toyota Innova Crysta (GJ05 PS 4432)'] },
+    { key:'Truck', label:'Truck', icon:'fa-truck', rate:16, names:['Tata LPT 1613 (GJ01 AB 4521)','Eicher Pro 2049 (GJ06 GH 3345)'] },
+  ];
+  function vehicleTypeByKey(key){ return VEHICLE_TYPES.find(v=>v.key===key); }
+  function demoVehicleNameFor(key){ const v=vehicleTypeByKey(key); if(!v) return null; return v.names[Math.floor(Math.random()*v.names.length)]; }
   const DEMO_DRIVERS=[['Rakesh Sharma','+91 98250 11234'],['Vikram Patel','+91 98790 55621'],['Sanjay Rathod','+91 99250 87621'],['Imran Shaikh','+91 97250 44210']];
+
+  /* LOGGED-IN USER (simulated — persisted in this browser so the booking form can auto-fill name) */
+  let currentUser = (function(){
+    try { const saved = JSON.parse(localStorage.getItem('fleetops-user-profile')); if(saved && saved.name) return saved; } catch(e){}
+    return { name:'Guest User', phone:'' };
+  })();
+  function saveCurrentUser(){ localStorage.setItem('fleetops-user-profile', JSON.stringify(currentUser)); }
+  function initialsOf(name){ return (name||'U').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase() || 'U'; }
 
   function todayISO(){ return new Date().toISOString().slice(0,10); }
   function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
   function money(n){ return '₹' + (Math.round(n*100)/100).toLocaleString('en-IN'); }
   function statusClass(s){ return {Requested:'pending',Assigned:'assigned','In Transit':'progress',Completed:'completed',Cancelled:'cancelled'}[s]||'pending'; }
   function statusIcon(s){ return {Requested:'fa-hourglass-half',Assigned:'fa-truck','In Transit':'fa-road',Completed:'fa-circle-check',Cancelled:'fa-ban'}[s]||'fa-circle'; }
-  function priorityClass(p){ return p.toLowerCase(); } function priorityIcon(p){ return {Low:'fa-arrow-down',Medium:'fa-equals',High:'fa-triangle-exclamation'}[p]||'fa-equals'; }
 
   /* VALIDATION */
   const validators = {
     bt_name: v=>v.trim().length>1, bt_phone: v=>v.trim().length>=7, bt_pickup: v=>v.trim().length>1, bt_drop: v=>v.trim().length>1,
-    bt_date: v=>!!v, bt_time: v=>!!v, bt_cargo: v=>!!v, bt_weight: v=>parseFloat(v)>0, bt_distance: v=>parseFloat(v)>0, bt_notes: v=>v.trim().length>2,
+    bt_date: v=>!!v, bt_time: v=>!!v, bt_cargo: v=>!!v, bt_weight: v=>parseFloat(v)>0, bt_distance: v=>parseFloat(v)>0,
+    bt_vehicle: v=>!!v,
   };
   function validateField(el){ const g=el.closest('.input-group'); if(!g||!validators[el.id]) return true; const ok=validators[el.id](el.value); g.classList.remove('valid','invalid'); g.classList.add(ok?'valid':'invalid'); return ok; }
   function validateForm(ids){ let ok=true; ids.forEach(id=>{ if(!validateField(document.getElementById(id))) ok=false; }); return ok; }
@@ -457,9 +478,100 @@
   function attachLiveValidation(ids,cb){ ids.forEach(id=>{ const el=document.getElementById(id); if(!el) return; const evt=(el.tagName==='SELECT'||el.type==='date'||el.type==='time')?'change':'input'; el.addEventListener(evt, ()=>{ validateField(el); if(cb) cb(); }); el.addEventListener('blur', ()=>{ validateField(el); if(cb) cb(); }); }); }
   function resetValidationState(ids){ ids.forEach(id=>{ const el=document.getElementById(id); const g=el&&el.closest('.input-group'); if(g) g.classList.remove('valid','invalid'); }); }
   function syncSubmitButton(btnId, ids){ const b=document.getElementById(btnId); if(b) b.disabled=!isFormComplete(ids); }
-  const BOOK_FIELDS=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_time','bt_cargo','bt_weight','bt_distance','bt_notes'];
-  attachLiveValidation(BOOK_FIELDS, ()=>syncSubmitButton('bookSubmitBtn',BOOK_FIELDS));
+  const ALL_BOOK_FIELDS=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_time','bt_cargo','bt_weight','bt_distance','bt_vehicle'];
+  const CARGO_EXTRA_FIELDS=['bt_time','bt_weight','bt_distance']; // only needed for non-passenger cargo types
+  /* Passenger Transport = instant booking: still needs a vehicle type pick (for the fare), but skips
+     scheduled time/weight/distance entry. Any other cargo/trip type needs those extra fields too. */
+  function currentBookFields(){
+    const cargo=document.getElementById('bt_cargo').value;
+    const base=['bt_name','bt_phone','bt_pickup','bt_drop','bt_date','bt_cargo'];
+    if(!cargo) return base;
+    const withVehicle = base.concat(['bt_vehicle']);
+    return cargo==='Passenger Transport' ? withVehicle : withVehicle.concat(CARGO_EXTRA_FIELDS);
+  }
+  function updateCargoFieldsVisibility(){
+    const cargo=document.getElementById('bt_cargo').value;
+    const isPassenger = cargo==='Passenger Transport';
+    const isOtherCargo = cargo && !isPassenger;
+    const anySelected = !!cargo;
+    document.getElementById('grp_time').style.display = isOtherCargo ? '' : 'none';
+    document.getElementById('grp_weight').style.display = isOtherCargo ? '' : 'none';
+    document.getElementById('grp_distance').style.display = isOtherCargo ? '' : 'none';
+    document.getElementById('grp_vehicle').style.display = anySelected ? '' : 'none';
+    document.getElementById('instantBookNote').style.display = isPassenger ? '' : 'none';
+    CARGO_EXTRA_FIELDS.forEach(id=>{ document.getElementById(id).required = isOtherCargo; });
+    document.getElementById('bt_vehicle').required = anySelected;
+    if(!isOtherCargo){ resetValidationState(CARGO_EXTRA_FIELDS); }
+    if(!anySelected){ resetValidationState(['bt_vehicle']); }
+    populateVehicleOptions();
+    if(isOtherCargo) autoCalcDistance();
+    updateFareEstimate();
+    syncSubmitButton('bookSubmitBtn', currentBookFields());
+  }
+  attachLiveValidation(ALL_BOOK_FIELDS, ()=>syncSubmitButton('bookSubmitBtn',currentBookFields()));
+  document.getElementById('bt_cargo').addEventListener('change', updateCargoFieldsVisibility);
   document.getElementById('bt_date').min = todayISO();
+  function prefillBookForm(){
+    document.getElementById('bt_name').value = currentUser.name;
+    document.getElementById('bt_date').value = todayISO();
+    if(currentUser.phone){ document.getElementById('bt_phone').value = currentUser.phone; validateField(document.getElementById('bt_phone')); }
+    validateField(document.getElementById('bt_name')); validateField(document.getElementById('bt_date'));
+  }
+  prefillBookForm();
+
+  /* AUTO DISTANCE CALCULATION (demo estimate from pickup & drop text — no external maps API) */
+  function estimateDistance(pickup, drop){
+    const str=(pickup||'').trim().toLowerCase()+'|'+(drop||'').trim().toLowerCase();
+    if(!pickup || !drop || pickup.trim().length<2 || drop.trim().length<2) return null;
+    let hash=0; for(let i=0;i<str.length;i++){ hash=(hash*31 + str.charCodeAt(i)) >>> 0; }
+    return 8 + (hash % 480); // simulated 8–487 km range, deterministic per route
+  }
+  function autoCalcDistance(){
+    const cargo=document.getElementById('bt_cargo').value;
+    if(cargo==='Passenger Transport') return;
+    const pickup=document.getElementById('bt_pickup').value, drop=document.getElementById('bt_drop').value;
+    const distEl=document.getElementById('bt_distance');
+    const d=estimateDistance(pickup, drop);
+    if(d!=null){ distEl.value=d; validateField(distEl); }
+    else { distEl.value=''; }
+    syncSubmitButton('bookSubmitBtn', currentBookFields());
+  }
+  ['bt_pickup','bt_drop'].forEach(id=>{ const el=document.getElementById(id); const handler=()=>{ autoCalcDistance(); updateFareEstimate(); }; el.addEventListener('input', handler); el.addEventListener('blur', handler); });
+
+  /* VEHICLE OPTIONS — same 4 categories (Bike, Car Sedan, Car SUV, Truck) regardless of cargo/trip type. */
+  function populateVehicleOptions(){
+    const sel=document.getElementById('bt_vehicle');
+    const current=sel.value;
+    sel.innerHTML = '<option value="">— select —</option>' + VEHICLE_TYPES.map(v=>`<option value="${v.key}">${v.label}</option>`).join('');
+    sel.value = VEHICLE_TYPES.some(v=>v.key===current) ? current : '';
+  }
+  document.getElementById('bt_vehicle').addEventListener('change', updateFareEstimate);
+
+  /* LIVE FARE ESTIMATE — shown once a vehicle type is picked (Passenger Transport: as soon as pickup+drop
+     give a distance; cargo types: once the auto-calculated distance is available). */
+  function currentFareRate(cargo, vehicleKey){
+    const v=vehicleTypeByKey(vehicleKey);
+    return v ? v.rate : null;
+  }
+  function updateFareEstimate(){
+    const box=document.getElementById('farePreview');
+    const cargo=document.getElementById('bt_cargo').value;
+    const vehicleKey=document.getElementById('bt_vehicle').value;
+    if(!cargo || !vehicleKey){ box.style.display='none'; box.innerHTML=''; return; }
+    const distance = cargo==='Passenger Transport'
+      ? estimateDistance(document.getElementById('bt_pickup').value, document.getElementById('bt_drop').value)
+      : parseFloat(document.getElementById('bt_distance').value) || null;
+    const rate = currentFareRate(cargo, vehicleKey);
+    if(!distance || !rate){ box.style.display='none'; box.innerHTML=''; return; }
+    const fare = Math.round(distance*rate);
+    const v=vehicleTypeByKey(vehicleKey);
+    box.style.display='';
+    box.innerHTML = `<div style="background:var(--success-bg); color:var(--success); padding:.8rem 1rem; border-radius:12px; font-size:.85rem; font-weight:700; display:flex; align-items:center; justify-content:space-between; gap:.6rem; flex-wrap:wrap;">
+      <span><i class="fas ${v.icon}"></i> Estimated Fare (${v.label})</span>
+      <span style="font-size:1.05rem;">${money(fare)} <span style="font-weight:500; font-size:.78rem; opacity:.85;">(${distance} km × ₹${rate}/km)</span></span>
+    </div>`;
+  }
+  updateCargoFieldsVisibility();
 
   /* NAV */
   const navItems=document.querySelectorAll('.nav-item[data-page], .dropdown-item[data-page]'), pages=document.querySelectorAll('.page');
@@ -502,48 +614,62 @@
   }
   document.getElementById('markAllRead').addEventListener('click', ()=>{ notifications.forEach(n=>n.read=true); renderNotifications(); });
 
-  /* PRIORITY PICKER */
-  const priorityPicker=document.getElementById('priorityPicker'); let selectedPriority='Medium';
-  priorityPicker.addEventListener('click', e=>{ const opt=e.target.closest('.priority-opt'); if(!opt) return; priorityPicker.querySelectorAll('.priority-opt').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); selectedPriority=opt.dataset.val; });
-
   /* BOOK TRIP */
   document.getElementById('bookForm').addEventListener('submit', e=>{
     e.preventDefault();
-    if(!validateForm(BOOK_FIELDS)){ showToast('Missing information','Please fill all required fields correctly.','error'); return; }
-    tripSeq++;
-    const distance=parseFloat(document.getElementById('bt_distance').value);
     const cargo=document.getElementById('bt_cargo').value;
-    const fare = Math.round(distance * (RATES[cargo]||12));
+    const isPassenger = cargo==='Passenger Transport';
+    const fields = currentBookFields();
+    if(!validateForm(fields)){ showToast('Missing information','Please fill all required fields correctly.','error'); return; }
+    tripSeq++;
+    let distance, weight, time;
+    const chosenVehicleKey = document.getElementById('bt_vehicle').value;
+    if(isPassenger){
+      distance = estimateDistance(document.getElementById('bt_pickup').value, document.getElementById('bt_drop').value) || 10;
+      weight = null;
+      time = new Date().toTimeString().slice(0,5);
+    } else {
+      distance = parseFloat(document.getElementById('bt_distance').value);
+      weight = parseFloat(document.getElementById('bt_weight').value);
+      time = document.getElementById('bt_time').value;
+    }
+    const rate = currentFareRate(cargo, chosenVehicleKey) || 10;
+    const fare = Math.round(distance * rate);
+    const vehicleType = vehicleTypeByKey(chosenVehicleKey);
     const t = { id:'TRP-'+tripSeq, name:document.getElementById('bt_name').value.trim(), phone:document.getElementById('bt_phone').value.trim(),
       pickup:document.getElementById('bt_pickup').value.trim(), drop:document.getElementById('bt_drop').value.trim(),
-      date:document.getElementById('bt_date').value, time:document.getElementById('bt_time').value, cargo, weight:parseFloat(document.getElementById('bt_weight').value),
-      distance, priority:selectedPriority, notes:document.getElementById('bt_notes').value.trim(), fare, status:'Requested',
-      vehicle:null, driver:null, driverPhone:null, progress:0, _timers:[] };
+      date:document.getElementById('bt_date').value, time, cargo, weight,
+      distance, fare, status:'Requested',
+      vehicleType: vehicleType ? vehicleType.label : null, vehicle:null, driver:null, driverPhone:null, progress:0, _timers:[] };
     trips.unshift(t);
+    currentUser.phone = t.phone; saveCurrentUser();
     pushNotif(`Trip booked: ${t.id}`);
     document.getElementById('tripConfirmedDetails').innerHTML = `
       <div class="detail-row"><span class="k"><i class="fas fa-hashtag"></i> Trip ID</span><span class="v">${t.id}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-route"></i> Route</span><span class="v">${t.pickup} → ${t.drop}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-calendar-days"></i> Date</span><span class="v">${fmtDate(t.date)} · ${t.time}</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-indian-rupee-sign"></i> Estimated Fare</span><span class="v">${money(t.fare)}</span></div>`;
+      <div class="detail-row"><span class="k"><i class="fas ${vehicleType?vehicleType.icon:'fa-truck'}"></i> Vehicle Type</span><span class="v">${t.vehicleType||'—'}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-indian-rupee-sign"></i> Estimated Fare</span><span class="v">${money(t.fare)}</span></div>
+      ${isPassenger ? `<div class="detail-row"><span class="k"><i class="fas fa-bolt"></i> Booking</span><span class="v">Instant — assigning now</span></div>` : ''}`;
     document.getElementById('goTrackBtn').dataset.id = t.id;
     openModal('modalTripConfirmed');
-    e.target.reset(); resetValidationState(BOOK_FIELDS); syncSubmitButton('bookSubmitBtn',BOOK_FIELDS);
-    priorityPicker.querySelectorAll('.priority-opt').forEach(o=>o.classList.remove('selected')); priorityPicker.querySelector('.sel-medium').classList.add('selected'); selectedPriority='Medium';
-    simulateAssignment(t.id);
+    e.target.reset(); resetValidationState(ALL_BOOK_FIELDS); updateCargoFieldsVisibility(); prefillBookForm();
+    simulateAssignment(t.id, { instant:isPassenger, vehicleKey: chosenVehicleKey||null });
     renderAll();
   });
-  document.getElementById('bookFormReset').addEventListener('click', ()=>{ document.getElementById('bookForm').reset(); resetValidationState(BOOK_FIELDS); syncSubmitButton('bookSubmitBtn',BOOK_FIELDS); });
+  document.getElementById('bookFormReset').addEventListener('click', ()=>{ document.getElementById('bookForm').reset(); resetValidationState(ALL_BOOK_FIELDS); updateCargoFieldsVisibility(); prefillBookForm(); });
   document.getElementById('goTrackBtn').addEventListener('click', function(){ closeModal('modalTripConfirmed'); goToPage('trackTrip'); const sel=document.getElementById('trackTripSelect'); sel.value=this.dataset.id; renderTrackPage(); });
 
   /* SIMULATED ASSIGNMENT + LIVE TRACKING (demo only — no real backend/GPS) */
-  function simulateAssignment(tripId){
+  function simulateAssignment(tripId, options){
+    options = options || {};
+    const assignDelay = options.instant ? 400 : 3500;
     const assignTimer = setTimeout(()=>{
       const t = trips.find(x=>x.id===tripId); if(!t || t.status!=='Requested') return;
-      t.vehicle = DEMO_VEHICLES[Math.floor(Math.random()*DEMO_VEHICLES.length)];
+      t.vehicle = demoVehicleNameFor(options.vehicleKey) || 'Assigned vehicle';
       const dr = DEMO_DRIVERS[Math.floor(Math.random()*DEMO_DRIVERS.length)];
       t.driver = dr[0]; t.driverPhone = dr[1]; t.status='Assigned';
-      pushNotif(`${t.driver} assigned to ${t.id}`); showToast('Driver assigned', `${t.driver} will handle ${t.id}.`, 'success');
+      pushNotif(`${t.driver} assigned to ${t.id}`); showToast(options.instant?'Instant booking confirmed':'Driver assigned', `${t.driver} will handle ${t.id}.`, 'success');
       renderAll();
       const transitTimer = setTimeout(()=>{
         const tt = trips.find(x=>x.id===tripId); if(!tt || tt.status!=='Assigned') return;
@@ -561,7 +687,7 @@
         trips.find(x=>x.id===tripId)._timers.push(progressInterval);
       }, 4000);
       trips.find(x=>x.id===tripId)._timers.push(transitTimer);
-    }, 3500);
+    }, assignDelay);
     trips.find(x=>x.id===tripId)._timers.push(assignTimer);
   }
 
@@ -637,18 +763,17 @@
       const hay = `${t.id} ${t.name} ${t.pickup} ${t.drop}`.toLowerCase();
       return (!search||hay.includes(search)) && (statusF==='all'||t.status===statusF);
     });
-    const pOrder={High:0,Medium:1,Low:2};
     if(sort==='newest') list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
     if(sort==='oldest') list=[...list].sort((a,b)=>a.date.localeCompare(b.date));
-    if(sort==='priority') list=[...list].sort((a,b)=>pOrder[a.priority]-pOrder[b.priority]);
+    if(sort==='fare') list=[...list].sort((a,b)=>b.fare-a.fare);
     const body=document.getElementById('historyBody');
     if(list.length===0){ body.innerHTML=''; document.getElementById('historyEmpty').innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p class="main">${trips.length===0?'No trips booked yet':'No trips match your filters'}</p><p class="sub">${trips.length===0?'Book your first trip to see it here.':'Try clearing the search or status filter.'}</p></div>`; return; }
     document.getElementById('historyEmpty').innerHTML='';
     body.innerHTML = list.map(t=>`<tr>
       <td><strong>${t.id}</strong></td><td style="font-size:.78rem;">${t.pickup} → ${t.drop}</td>
-      <td style="font-size:.78rem;">${t.vehicle||'<span style="color:var(--text-muted)">Pending</span>'}</td>
+      <td style="font-size:.78rem;">${t.cargo}</td>
+      <td style="font-size:.78rem;">${t.vehicle||'<span style="color:var(--text-muted)">Pending</span>'}${t.vehicleType?` <span style="color:var(--text-muted)">(${t.vehicleType})</span>`:''}</td>
       <td style="font-size:.78rem;">${t.driver||'<span style="color:var(--text-muted)">Pending</span>'}</td>
-      <td><span class="priority-tag ${priorityClass(t.priority)}"><i class="fas ${priorityIcon(t.priority)}"></i> ${t.priority}</span></td>
       <td><span class="badge ${statusClass(t.status)}"><i class="fas ${statusIcon(t.status)}"></i> ${t.status}</span></td>
       <td style="font-size:.78rem;">${fmtDate(t.date)}</td><td>${money(t.fare)}</td>
       <td><div class="row-actions"><button class="row-icon-btn" title="View" data-view="${t.id}"><i class="fas fa-eye"></i></button>
@@ -676,14 +801,13 @@
       <div class="detail-row"><span class="k"><i class="fas fa-route"></i> Route</span><span class="v">${t.pickup} → ${t.drop}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-calendar-days"></i> Date &amp; Time</span><span class="v">${fmtDate(t.date)} · ${t.time}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-box"></i> Cargo Type</span><span class="v">${t.cargo}</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-weight-hanging"></i> Weight</span><span class="v">${t.weight} kg</span></div>
+      ${t.weight!=null?`<div class="detail-row"><span class="k"><i class="fas fa-weight-hanging"></i> Weight</span><span class="v">${t.weight} kg</span></div>`:''}
       <div class="detail-row"><span class="k"><i class="fas fa-road"></i> Distance</span><span class="v">${t.distance} km</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-car-side"></i> Vehicle Type</span><span class="v">${t.vehicleType||'Not assigned'}</span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-indian-rupee-sign"></i> Fare</span><span class="v">${money(t.fare)}</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-signal"></i> Priority</span><span class="v"><span class="priority-tag ${priorityClass(t.priority)}"><i class="fas ${priorityIcon(t.priority)}"></i> ${t.priority}</span></span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-circle-info"></i> Status</span><span class="v"><span class="badge ${statusClass(t.status)}"><i class="fas ${statusIcon(t.status)}"></i> ${t.status}</span></span></div>
       <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Vehicle</span><span class="v">${t.vehicle||'Not assigned'}</span></div>
-      <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Driver</span><span class="v">${t.driver||'Not assigned'}</span></div>
-      ${t.notes?`<div class="detail-row"><span class="k"><i class="fas fa-note-sticky"></i> Notes</span><span class="v">${t.notes}</span></div>`:''}`;
+      <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Driver</span><span class="v">${t.driver||'Not assigned'}</span></div>`;
     openModal('modalTripDetails');
   }
 
@@ -738,9 +862,9 @@
   /* PROFILE */
   function renderProfile(){
     const latest = trips[0];
-    const name = latest ? latest.name : 'Guest User';
-    const phone = latest ? latest.phone : null;
-    const initials = name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const name = currentUser.name;
+    const phone = currentUser.phone || (latest ? latest.phone : null);
+    const initials = initialsOf(name);
     document.getElementById('profName').textContent = name;
     document.getElementById('profPhone').textContent = phone || 'Not set — book a trip to save your details';
     document.getElementById('profAvatar').textContent = initials;
@@ -754,6 +878,17 @@
     sw.addEventListener('click', ()=>{ sw.classList.toggle('on'); showToast('Preference updated', sw.classList.contains('on')?'Enabled':'Disabled', 'info'); });
   });
   document.getElementById('darkPref').addEventListener('click', function(){ setTheme(this.classList.contains('on') ? 'light' : 'dark'); });
+
+  /* SIGN OUT */
+  document.getElementById('signOutBtn').addEventListener('click', function(){ document.getElementById('userPanel').classList.remove('open'); openModal('modalSignOut'); });
+  document.getElementById('confirmSignOutBtn').addEventListener('click', function(){
+    currentUser = { name:'Guest User', phone:'' };
+    localStorage.removeItem('fleetops-user-profile');
+    closeModal('modalSignOut');
+    showToast('Signed out', 'Your profile details have been cleared.', 'info');
+    document.getElementById('bookForm').reset(); resetValidationState(ALL_BOOK_FIELDS); updateCargoFieldsVisibility(); prefillBookForm();
+    renderAll(); goToPage('dashboard');
+  });
 
   /* GLOBAL SEARCH */
   document.getElementById('globalSearch').addEventListener('input', function(){
