@@ -1,102 +1,163 @@
-# TransitOps
+# Cipher_Nexus
 
-Smart Transport Operations Platform built for the **Odoo Hackathon**.
+> **Smart Transport Operations Platform**  
+Developed for the **Odoo Hiring Hackathon 2026**
 
-> **Project Status:** 🚧 Under Development
+## 📖 About
 
----
+Cipher_Nexus is a Transport Management System (TMS) designed to simplify and centralize fleet operations. The platform enables organizations to manage vehicles, drivers, trips, maintenance, fuel records, expenses, and operational analytics through a single interface.
 
-## About
-
-TransitOps is a centralized transport management system designed to simplify fleet operations. The platform helps organizations manage vehicles, drivers, trips, maintenance, fuel logs, expenses, and operational reports from a single dashboard.
-
-The project is currently in its initial development phase, with research and planning completed. The team is actively working on implementing authentication and role-based access control.
+This project is being developed as part of the **Odoo Hiring Hackathon**.
 
 ---
 
-## Current Progress
+## 🚀 Current Development Status
 
 ### ✅ Completed
-- Problem Statement Analysis
-- Requirement Gathering
+
+- Project Planning
+- Requirement Analysis
 - Business Workflow Research
-- Database Schema Planning
-- Module Planning
-- UI Wireframe Discussion
-- Technology Stack Selection
-
-### 🚧 In Progress
-- User Authentication
-- Login & Registration
-- Role-Based Access Control (RBAC)
-- Session Management
-
-### 📋 Upcoming
-- Vehicle Management
-- Driver Management
-- Trip Management
-- Maintenance Module
-- Fuel & Expense Tracking
-- Dashboard
-- Reports & Analytics
-
----
-
-## Planned Features
-
+- Database Design
+- Login Interface
+- Signup Interface
 - Secure User Authentication
-- Role-Based Access Control (RBAC)
-- Vehicle Registry
-- Driver Management
-- Trip Dispatch System
-- Maintenance Workflow
-- Fuel & Expense Management
-- Dashboard with KPIs
+- Password Hashing
+- Session Management
+- MySQL Database Integration
+- Role-Based Authentication
+- Responsive UI
+
+### 🚧 Currently Working On
+
+- Vehicle Management Module
+- Driver Management Module
+- Trip Management
+- Fleet Dashboard
 - Reports & Analytics
-- CSV Export
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-- Odoo
-- Python
-- PostgreSQL
-- XML
-- HTML
-- CSS
+- Secure Login & Signup
+- Password Hashing using PHP
+- Role-Based Authentication (RBAC)
+- Session Management
+- MySQL Database Connectivity
+- Responsive User Interface
+- Clean and Modern Design
+- Fleet Management System (In Progress)
+
+---
+
+## 🛠 Tech Stack
+
+**Frontend**
+- HTML5
+- CSS3
 - JavaScript
 
----
+**Backend**
+- PHP
 
-## Development Checklist
+**Database**
+- MySQL
 
-- [x] Project Planning
-- [x] Requirement Analysis
-- [x] Business Rule Research
-- [x] Database Design
-- [x] UI Planning
-- [ ] Authentication
-- [ ] Login & Registration
-- [ ] RBAC
-- [ ] Vehicle Module
-- [ ] Driver Module
-- [ ] Trip Module
-- [ ] Maintenance Module
-- [ ] Fuel & Expense Module
-- [ ] Dashboard
-- [ ] Reports
+**Server**
+- Apache (XAMPP)
 
 ---
 
-## Repository Status
+## 📂 Project Structure
 
-🚧 This repository is currently under active development as part of the **Odoo Hackathon**.
 
-The team has completed the research and planning phase and is currently implementing the authentication module. New features and modules will be added incrementally throughout the hackathon.
 
 ---
 
-## Team
+## ⚙ Installation
 
-Developed by our team for the **Odoo Hackathon 2026**.
+1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/Cipher_Nexus.git
+```
+
+2. Move the project into the XAMPP `htdocs` directory.
+
+3. Start **Apache** and **MySQL** from XAMPP.
+
+4. Create a database named:
+
+```
+transitops
+```
+
+5. Import the SQL file or create the required tables.
+
+6. Update database credentials in:
+
+```
+db.php
+```
+
+7. Open your browser:
+
+```
+http://localhost/Cipher_Nexus/login.php
+```
+
+---
+
+## 🔒 Security
+
+- Password Hashing (`password_hash()`)
+- Password Verification (`password_verify()`)
+- Session-Based Authentication
+- Duplicate Email Validation
+- Secure Login Flow
+- Role-Based Access Control
+
+---
+
+## 📋 Upcoming Features
+
+- Vehicle Registry
+- Driver Management
+- Trip Dispatch
+- Maintenance Module
+- Fuel Logs
+- Expense Tracking
+- Dashboard Analytics
+- CSV Export
+- Reports
+- Fleet Utilization
+- Vehicle ROI
+
+---
+
+## 📸 Screenshots
+
+> Screenshots will be added after completing the remaining modules.
+
+---
+
+## 🎯 Project Goal
+
+Develop a secure and scalable Transport Management System that streamlines fleet operations while demonstrating strong backend development, authentication, database management, and role-based access control.
+
+---
+
+## 👨‍💻 Developer
+
+**Mihir Trivedi**
+
+B.Tech Information Technology
+
+Developed for the **Odoo Hiring Hackathon 2026**
+
+---
+
+## ⭐ Repository Status
+
+This repository is under active development. New modules and improvements are being added throughout the hackathon.
