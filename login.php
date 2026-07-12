@@ -477,7 +477,11 @@ echo "<script>alert('Invalid Email');</script>";
 
     <div class="forms-wrapper">
       
-      <form class="auth-form active-view" id="loginForm" method="POST" action="/api/v1/auth/login" autocomplete="off">
+      <form class="auth-form active-view"
+      id="loginForm"
+      method="POST"
+      action="login.php"
+      autocomplete="off">
         <input type="hidden" name="_csrf" value="ANTI_CSRF_TOKEN_VERIFICATION_STRING_VALUE" />
         
         <div class="input-group">
@@ -505,7 +509,10 @@ echo "<script>alert('Invalid Email');</script>";
           </div>
         </div>
 
-        <button type="submit" class="btn-primary">
+        <button
+type="submit"
+name="login"
+class="btn-primary">
           <i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i> Assert Identity credentials
         </button>
 
@@ -516,7 +523,11 @@ echo "<script>alert('Invalid Email');</script>";
         </div>
       </form>
 
-      <form class="auth-form hidden" id="signupForm" method="POST" action="/api/v1/auth/register" autocomplete="off">
+<form class="auth-form hidden"
+id="signupForm"
+method="POST"
+action="signup.php"
+autocomplete="off">
         <input type="hidden" name="_csrf" value="ANTI_CSRF_TOKEN_VERIFICATION_STRING_VALUE" />
 
         <div class="input-group">
@@ -538,7 +549,10 @@ echo "<script>alert('Invalid Email');</script>";
           </select>
         </div>
 
-        <button type="submit" class="btn-primary">
+        <button
+type="submit"
+name="signup"
+class="btn-primary">
           <i class="fas fa-user-plus" aria-hidden="true"></i> Initialize Account Creation
         </button>
 
@@ -599,7 +613,6 @@ echo "<script>alert('Invalid Email');</script>";
 
       // ----- Form Submission Security Interceptor Blocks -----
       function processSecureForm(event, targetActionStr) {
-        event.preventDefault();
         const activeForm = event.target;
         const submitBtn = activeForm.querySelector('.btn-primary');
         
