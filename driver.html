@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TransitOps Driver · Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background:var(--bg-gradient); color:var(--text-primary); min-height:100vh; transition:background .3s,color .2s; overflow-x:hidden; }
+  :root{
+    --bg-gradient: linear-gradient(145deg,#f6f9fc 0%,#e9f0f5 100%);
+    --card-bg: rgba(255,255,255,0.75); --card-bg-solid:#ffffff; --card-border: rgba(255,255,255,0.5);
+    --card-shadow: 0 25px 50px -12px rgba(0,20,30,0.12);
+    --text-primary:#0b1e2b; --text-secondary:#2c3e50; --text-muted:#5b6f7e;
+    --input-bg:#ffffff; --input-border:#d0dce8; --input-focus:#0066cc; --input-shadow:0 0 0 3px rgba(0,102,204,0.15);
+    --btn-primary:#0a2b3c; --btn-primary-hover:#1a3f54; --btn-text:#ffffff;
+    --label-color:#1f3345; --dropdown-bg:#ffffff; --toggle-bg:#e2e8f0; --toggle-dot:#ffffff; --icon-color:#2c3e50;
+    --badge-bg:#eef3f8; --badge-text:#0b2b3c; --footer-text:#4e6a7c; --divider:#d7e2ec;
+    --sidebar-bg: rgba(10,20,35,0.97); --sidebar-text:#c3cede; --sidebar-active:#153a5c;
+    --success:#1c8a5e; --success-bg:#e4f7ee; --warning:#b7791f; --warning-bg:#fdf3dd;
+    --danger:#c74a4a; --danger-bg:#fbe8e8; --info:#0066cc; --info-bg:#e6f0fb; --accent:#ff8a3d;
+    --slate:#5b6f7e; --slate-bg:#eef1f4;
+  }
+  [data-theme="dark"]{
+    --bg-gradient: linear-gradient(145deg,#0b141e 0%,#141f2b 100%);
+    --card-bg: rgba(22,34,46,0.85); --card-bg-solid:#182533; --card-border: rgba(70,100,130,0.3);
+    --card-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+    --text-primary:#edf2f7; --text-secondary:#cbd5e1; --text-muted:#94a3b8;
+    --input-bg:#1e2c3a; --input-border:#3a5068; --input-focus:#66b5ff; --input-shadow:0 0 0 3px rgba(102,181,255,0.25);
+    --btn-primary:#2d4b66; --btn-primary-hover:#3f6382; --btn-text:#f0f6fc;
+    --label-color:#dde7f0; --dropdown-bg:#1e2c3a; --toggle-bg:#2d4055; --toggle-dot:#e6edf5; --icon-color:#b0c8dd;
+    --badge-bg:#1f3142; --badge-text:#cbdae8; --footer-text:#8fa6bb; --divider:#2e4258;
+    --sidebar-bg: rgba(4,10,18,0.97); --sidebar-text:#9fb4c4; --sidebar-active:#1a3d52;
+    --success:#3ddc97; --success-bg:#123326; --warning:#e6b566; --warning-bg:#33280f;
+    --danger:#f08080; --danger-bg:#3a1a1a; --info:#66b5ff; --info-bg:#132638; --accent:#ff9d5c;
+    --slate:#94a3b8; --slate-bg:#22303e;
+  }
+  a{color:inherit;} ::-webkit-scrollbar{width:8px;height:8px;} ::-webkit-scrollbar-thumb{background:var(--input-border);border-radius:10px;}
+  ::selection{background:var(--input-focus);color:#fff;}
+  .app{display:flex;min-height:100vh;}
+  .sidebar{width:250px;background:var(--sidebar-bg);color:var(--sidebar-text);display:flex;flex-direction:column;padding:1.6rem 1.1rem;position:fixed;top:0;left:0;bottom:0;z-index:60;transition:transform .3s ease;}
+  .sidebar .brand{display:flex;align-items:center;gap:.7rem;padding:.4rem .4rem 1.6rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:1.4rem;}
+  .sidebar .brand i{font-size:1.5rem;color:#fff;background:rgba(255,255,255,0.08);padding:.55rem;border-radius:50%;}
+  .sidebar .brand h1{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.02em;}
+  .sidebar .brand span{display:block;font-size:.68rem;color:#8ba4b8;font-weight:500;letter-spacing:.4px;}
+  .nav-section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:#5f7889;font-weight:700;margin:.9rem .6rem .5rem;}
+  .nav-item{display:flex;align-items:center;gap:.85rem;padding:.75rem .9rem;border-radius:14px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:.25rem;transition:.18s;position:relative;border:none;background:none;width:100%;text-align:left;color:inherit;}
+  .nav-item i{width:18px;text-align:center;font-size:1rem;opacity:.85;}
+  .nav-item:hover{background:rgba(255,255,255,0.06);color:#fff;} .nav-item.active{background:var(--sidebar-active);color:#fff;}
+  .nav-item.active::before{content:'';position:absolute;left:-1.1rem;top:50%;transform:translateY(-50%);width:4px;height:60%;background:var(--accent);border-radius:0 4px 4px 0;}
+  .nav-badge{margin-left:auto;background:var(--accent);color:#1a1206;font-size:.68rem;font-weight:800;padding:.1rem .45rem;border-radius:20px;}
+  .sidebar-footer{margin-top:auto;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08);}
+  .duty-card{background:rgba(255,255,255,0.06);border-radius:16px;padding:.9rem;display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem;}
+  .duty-dot{width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(61,220,151,0.18);flex-shrink:0;}
+  .duty-dot.warn{background:var(--danger);box-shadow:0 0 0 4px rgba(240,128,128,0.18);}
+  .duty-card div p:first-child{font-size:.78rem;font-weight:700;color:#fff;} .duty-card div p:last-child{font-size:.68rem;color:#8ba4b8;}
+  .sidebar-close,.hamburger{display:none;}
+  .main{flex:1;margin-left:250px;display:flex;flex-direction:column;min-height:100vh;}
+  .topbar{display:flex;align-items:center;gap:1rem;padding:1rem 2rem;position:sticky;top:0;z-index:40;background:var(--card-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--card-border);}
+  .hamburger{display:none;background:var(--badge-bg);border:none;color:var(--icon-color);width:38px;height:38px;border-radius:50%;font-size:1rem;cursor:pointer;align-items:center;justify-content:center;}
+  .search-box{flex:1;max-width:420px;position:relative;}
+  .search-box i{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem;}
+  .search-box input{width:100%;padding:.65rem 1rem .65rem 2.4rem;border-radius:30px;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--text-primary);font-size:.85rem;outline:none;transition:.2s;font-family:inherit;}
+  .search-box input:focus{border-color:var(--input-focus);box-shadow:var(--input-shadow);}
+  .topbar-right{display:flex;align-items:center;gap:.7rem;margin-left:auto;}
+  .icon-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--icon-color);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:.95rem;transition:.2s;}
+  .icon-btn:hover{border-color:var(--input-focus);color:var(--input-focus);}
+  .icon-dot{position:absolute;top:-3px;right:-3px;background:var(--danger);color:#fff;font-size:.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--card-bg-solid);}
+  .theme-toggle{display:flex;align-items:center;gap:.5rem;background:var(--toggle-bg);padding:.35rem .7rem;border-radius:40px;cursor:pointer;border:none;font-size:.78rem;font-weight:600;color:var(--text-secondary);}
+  .toggle-switch{width:34px;height:18px;background:var(--input-border);border-radius:40px;position:relative;transition:.25s;}
+  .toggle-switch::after{content:'';width:14px;height:14px;background:var(--toggle-dot);border-radius:50%;position:absolute;top:2px;left:2px;transition:.3s cubic-bezier(.34,1.2,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.2);}
+  [data-theme="dark"] .toggle-switch{background:#3d5a7a;} [data-theme="dark"] .toggle-switch::after{left:18px;background:#f0f6fe;}
+  .user-menu{position:relative;}
+  .user-chip{display:flex;align-items:center;gap:.6rem;padding:.35rem .8rem .35rem .35rem;border-radius:40px;background:var(--input-bg);border:1.5px solid var(--input-border);cursor:pointer;transition:.2s;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0a2b3c,#1a3f54);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;}
+  .user-chip .info{line-height:1.15;} .user-chip .info p:first-child{font-size:.8rem;font-weight:700;} .user-chip .info p:last-child{font-size:.68rem;color:var(--text-muted);}
+  .dropdown-panel{position:absolute;top:calc(100% + 10px);right:0;min-width:230px;background:var(--dropdown-bg);border:1px solid var(--card-border);border-radius:18px;box-shadow:var(--card-shadow);padding:.6rem;z-index:80;opacity:0;visibility:hidden;transform:translateY(-8px);transition:.18s;}
+  .dropdown-panel.open{opacity:1;visibility:visible;transform:translateY(0);} .dropdown-panel.notif{min-width:340px;max-height:420px;overflow-y:auto;}
+  .notif-header{display:flex;justify-content:space-between;align-items:center;padding:.5rem .6rem .7rem;} .notif-header span{font-size:.72rem;color:var(--input-focus);cursor:pointer;font-weight:600;}
+  .notif-item{display:flex;gap:.7rem;padding:.7rem;border-radius:12px;cursor:pointer;} .notif-item:hover{background:var(--badge-bg);}
+  .notif-item .dot{width:8px;height:8px;border-radius:50%;margin-top:.35rem;flex-shrink:0;background:var(--input-focus);} .notif-item.read .dot{background:transparent;}
+  .notif-item p.title{font-size:.8rem;font-weight:700;} .notif-item p.time{font-size:.7rem;color:var(--text-muted);margin-top:.15rem;}
+  .content{padding:1.8rem 2rem 3rem;flex:1;}
+  .page{display:none;animation:fadeIn .35s ease;} .page.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .page-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.6rem;flex-wrap:wrap;gap:1rem;}
+  .page-header h2{font-size:1.55rem;font-weight:800;letter-spacing:-0.02em;} .page-header p{font-size:.85rem;color:var(--text-muted);margin-top:.25rem;}
+  .btn{display:inline-flex;align-items:center;gap:.55rem;border:none;border-radius:40px;padding:.75rem 1.4rem;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;font-family:inherit;}
+  .btn-primary{background:var(--btn-primary);color:var(--btn-text);box-shadow:0 8px 18px -6px rgba(0,30,50,0.25);}
+  .btn-primary:hover{background:var(--btn-primary-hover);transform:translateY(-1px);}
+  .btn-outline{background:transparent;border:1.5px solid var(--input-border);color:var(--text-secondary);} .btn-outline:hover{border-color:var(--input-focus);color:var(--input-focus);}
+  .btn-danger{background:var(--danger-bg);color:var(--danger);} .btn-danger:hover{filter:brightness(0.95);}
+  .btn-success{background:var(--success-bg);color:var(--success);} .btn-success:hover{filter:brightness(0.95);}
+  .btn-sm{padding:.5rem 1rem;font-size:.78rem;} .btn:disabled{opacity:.5;cursor:not-allowed;} .btn-block{width:100%;justify-content:center;}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-bottom:1.8rem;}
+  .stat-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:24px;padding:1.4rem;backdrop-filter:blur(12px);box-shadow:var(--card-shadow);position:relative;overflow:hidden;}
+  .stat-card .stat-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.9rem;}
+  .stat-card h3{font-size:1.7rem;font-weight:800;letter-spacing:-0.02em;} .stat-card p.label{font-size:.78rem;color:var(--text-muted);font-weight:600;margin-top:.2rem;}
+  .card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:26px;padding:1.6rem;backdrop-filter:blur(12px);box-shadow:var(--card-shadow);margin-bottom:1.6rem;}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:.7rem;}
+  .card-header h3{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:.6rem;} .card-header h3 i{color:var(--input-focus);font-size:.95rem;}
+  .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:1.6rem;}
+  .banner-alert{border-radius:18px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.8rem;margin-bottom:1.4rem;font-size:.85rem;font-weight:600;display:none;}
+  .banner-alert.show{display:flex;} .banner-alert.bad{background:var(--danger-bg);color:var(--danger);} .banner-alert.good{background:var(--success-bg);color:var(--success);} .banner-alert.warn{background:var(--warning-bg);color:var(--warning);}
+  .banner-alert i{font-size:1rem;margin-top:.1rem;} .banner-alert ul{margin:.3rem 0 0 1.1rem;} .banner-alert a.blink{text-decoration:underline;cursor:pointer;}
+  .chart-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.85rem;} .chart-row:last-child{margin-bottom:0;}
+  .chart-label{width:120px;font-size:.78rem;font-weight:700;color:var(--text-secondary);flex-shrink:0;display:flex;align-items:center;gap:.4rem;} .chart-label i{width:14px;text-align:center;flex-shrink:0;}
+  .chart-bar-track{flex:1;height:11px;background:var(--badge-bg);border-radius:10px;overflow:hidden;} .chart-bar-fill{height:100%;border-radius:10px;transition:width .6s cubic-bezier(.34,1,.64,1);}
+  .chart-value{width:70px;text-align:right;font-size:.78rem;font-weight:800;flex-shrink:0;}
+  .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+  .quick-action{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:1.2rem;text-align:center;cursor:pointer;transition:.2s;backdrop-filter:blur(10px);}
+  .quick-action:hover{transform:translateY(-3px);border-color:var(--input-focus);box-shadow:var(--card-shadow);}
+  .quick-action i{font-size:1.4rem;color:var(--input-focus);margin-bottom:.6rem;display:block;} .quick-action p{font-size:.8rem;font-weight:700;}
+  .table-wrap{overflow-x:auto;border-radius:18px;border:1px solid var(--divider);}
+  table{width:100%;border-collapse:collapse;min-width:680px;}
+  thead th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);padding:.9rem 1rem;background:var(--badge-bg);font-weight:700;white-space:nowrap;}
+  tbody td{padding:.9rem 1rem;font-size:.85rem;border-top:1px solid var(--divider);vertical-align:middle;} tbody tr{transition:.15s;} tbody tr:hover{background:var(--badge-bg);}
+  .row-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
+  .row-icon-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--input-border);background:var(--input-bg);color:var(--icon-color);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;transition:.15s;}
+  .row-icon-btn:hover{border-color:var(--input-focus);color:var(--input-focus);}
+  .row-btn{border:none;border-radius:20px;padding:.4rem .8rem;font-size:.72rem;font-weight:700;cursor:pointer;}
+  .row-btn.accept{background:var(--success-bg);color:var(--success);} .row-btn.reject{background:var(--danger-bg);color:var(--danger);}
+  .row-btn:disabled{opacity:.45;cursor:not-allowed;}
+  .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .7rem;border-radius:30px;font-size:.72rem;font-weight:700;white-space:nowrap;} .badge i{font-size:.68rem;}
+  .badge.pending{background:var(--warning-bg);color:var(--warning);} .badge.assigned{background:var(--info-bg);color:var(--info);}
+  .badge.progress{background:var(--info-bg);color:var(--info);} .badge.completed{background:var(--success-bg);color:var(--success);}
+  .badge.cancelled{background:var(--danger-bg);color:var(--danger);} .badge.inshop{background:var(--warning-bg);color:var(--warning);}
+  .badge.retired{background:var(--slate-bg);color:var(--slate);} .badge.suspended{background:var(--danger-bg);color:var(--danger);}
+  .badge.offduty{background:var(--slate-bg);color:var(--slate);} .badge.available{background:var(--success-bg);color:var(--success);}
+  .filter-bar{display:flex;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;}
+  .filter-bar select,.filter-bar input[type="text"]{padding:.6rem 1rem;border-radius:14px;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--text-primary);font-size:.82rem;font-family:inherit;outline:none;}
+  .filter-bar select:focus,.filter-bar input:focus{border-color:var(--input-focus);box-shadow:var(--input-shadow);}
+  .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted);} .empty-state i{font-size:2.4rem;opacity:.35;margin-bottom:.8rem;display:block;}
+  .empty-state p.main{font-weight:700;color:var(--text-secondary);margin-bottom:.3rem;} .empty-state p.sub{font-size:.82rem;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+  .form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+  .input-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem;position:relative;} .input-group.full{grid-column:1/-1;}
+  .input-group label{font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.3px;color:var(--label-color);opacity:.9;display:flex;align-items:center;gap:.4rem;}
+  .input-group label i{font-size:.75rem;color:var(--text-muted);} .input-group label .req-star{color:var(--danger);font-size:.8rem;}
+  .input-group .field-wrap{position:relative;}
+  .input-group input,.input-group select,.input-group textarea{background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:16px;padding:.8rem 2.6rem .8rem 1.05rem;font-size:.9rem;font-weight:500;color:var(--text-primary);outline:none;transition:.2s;font-family:'Inter',sans-serif;width:100%;}
+  .input-group textarea{resize:vertical;min-height:80px;padding:.8rem 1.05rem;}
+  .input-group input:focus,.input-group select:focus,.input-group textarea:focus{border-color:var(--input-focus);box-shadow:var(--input-shadow);}
+  .input-group select{appearance:none;padding-right:2.6rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235b6f7e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1.1rem center;background-size:1rem;cursor:pointer;}
+  .validation-icon{position:absolute;right:.95rem;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:0;transition:.18s;pointer-events:none;}
+  .validation-icon.fa-check-circle{color:var(--success);} .validation-icon.fa-circle-exclamation{color:var(--danger);}
+  .input-group.has-select .validation-icon{right:2.4rem;}
+  .input-group.valid input,.input-group.valid select{border-color:var(--success);} .input-group.valid .validation-icon.fa-check-circle{opacity:1;}
+  .input-group.invalid input,.input-group.invalid select,.input-group.invalid textarea{border-color:var(--danger);} .input-group.invalid .validation-icon.fa-circle-exclamation{opacity:1;}
+  .error-msg{font-size:.72rem;color:var(--danger);font-weight:600;display:none;align-items:center;gap:.35rem;margin-top:.1rem;} .error-msg i{font-size:.7rem;} .input-group.invalid .error-msg{display:flex;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(6,14,20,0.55);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;visibility:hidden;transition:.2s;} .modal-overlay.open{opacity:1;visibility:visible;}
+  .modal-box{background:var(--card-bg-solid);border-radius:28px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 70px -20px rgba(0,0,0,0.4);transform:scale(.94) translateY(10px);transition:.22s cubic-bezier(.34,1.1,.64,1);border:1px solid var(--card-border);}
+  .modal-overlay.open .modal-box{transform:scale(1) translateY(0);} .modal-box.wide{max-width:760px;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;padding:1.4rem 1.6rem;border-bottom:1px solid var(--divider);}
+  .modal-head h3{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:.6rem;} .modal-head h3 i{color:var(--input-focus);}
+  .modal-close{width:34px;height:34px;border-radius:50%;border:none;background:var(--badge-bg);color:var(--icon-color);cursor:pointer;font-size:.9rem;} .modal-close:hover{background:var(--danger-bg);color:var(--danger);}
+  .modal-body{padding:1.5rem 1.6rem;} .modal-foot{display:flex;justify-content:flex-end;gap:.8rem;padding:1.2rem 1.6rem;border-top:1px solid var(--divider);}
+  .detail-row{display:flex;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid var(--divider);font-size:.85rem;} .detail-row:last-child{border-bottom:none;}
+  .detail-row span.k{color:var(--text-muted);font-weight:600;display:flex;align-items:center;gap:.4rem;} .detail-row span.k i{width:14px;text-align:center;} .detail-row span.v{font-weight:700;text-align:right;}
+  .confirm-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem;}
+  .confirm-icon.warn{background:var(--warning-bg);color:var(--warning);} .confirm-icon.danger{background:var(--danger-bg);color:var(--danger);} .confirm-icon.success{background:var(--success-bg);color:var(--success);}
+  .vehicle-pick{display:flex;flex-direction:column;gap:.6rem;max-height:260px;overflow-y:auto;margin-top:.6rem;}
+  .vehicle-pick label{display:flex;align-items:center;gap:.7rem;border:1.5px solid var(--input-border);border-radius:16px;padding:.8rem 1rem;cursor:pointer;font-size:.85rem;font-weight:600;}
+  .vehicle-pick input[type=radio]{accent-color:var(--input-focus);width:16px;height:16px;}
+  .vehicle-pick label.match{border-color:var(--success);}
+  .toast-stack{position:fixed;bottom:1.6rem;right:1.6rem;z-index:200;display:flex;flex-direction:column;gap:.7rem;max-width:340px;}
+  .toast{background:var(--card-bg-solid);border:1px solid var(--card-border);border-radius:16px;padding:.9rem 1.1rem;box-shadow:var(--card-shadow);display:flex;align-items:flex-start;gap:.7rem;animation:slideIn .3s ease;}
+  @keyframes slideIn{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}} .toast.hide{animation:slideOut .25s ease forwards;} @keyframes slideOut{to{transform:translateX(30px);opacity:0;}}
+  .toast i.tico{font-size:1.1rem;margin-top:.1rem;} .toast.success i.tico{color:var(--success);} .toast.error i.tico{color:var(--danger);} .toast.info i.tico{color:var(--info);}
+  .toast p.tt{font-weight:700;font-size:.85rem;} .toast p.ts{font-size:.76rem;color:var(--text-muted);margin-top:.1rem;} .toast-close{margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.8rem;}
+  .profile-hero{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;}
+  .profile-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#0a2b3c,#1a3f54);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2rem;flex-shrink:0;}
+  .profile-hero h2{font-size:1.3rem;font-weight:800;} .profile-hero p{font-size:.85rem;color:var(--text-muted);margin-top:.15rem;}
+  .profile-stats{display:flex;gap:1.6rem;margin-top:1rem;flex-wrap:wrap;} .profile-stats div p:first-child{font-size:1.2rem;font-weight:800;} .profile-stats div p:last-child{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;}
+  .divider-label{display:flex;align-items:center;gap:1rem;margin:.4rem 0 1.2rem;} .divider-label hr{flex:1;border:none;border-top:1.5px solid var(--divider);} .divider-label span{font-size:.72rem;font-weight:600;color:var(--text-muted);}
+  footer.appfoot{text-align:center;font-size:.72rem;color:var(--footer-text);padding:1.5rem 0 .5rem;}
+  .connect-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--info-bg);color:var(--info);padding:.15rem .6rem;border-radius:20px;font-size:.68rem;font-weight:700;margin-left:.5rem;}
+  @media (max-width:1080px){.stats-grid{grid-template-columns:repeat(2,1fr);} .grid-2{grid-template-columns:1fr;} .quick-grid{grid-template-columns:repeat(2,1fr);} .form-grid,.form-grid.three{grid-template-columns:1fr 1fr;}}
+  @media (max-width:860px){.sidebar{transform:translateX(-100%);box-shadow:20px 0 60px rgba(0,0,0,.3);} .sidebar.open{transform:translateX(0);} .sidebar-close{display:flex;position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,0.08);border:none;color:#fff;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;cursor:pointer;} .main{margin-left:0;} .hamburger{display:flex;} .search-box{display:none;} .stats-grid{grid-template-columns:1fr 1fr;} .quick-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:480px){.content{padding:1.2rem 1rem 2.5rem;} .topbar{padding:.9rem 1rem;} .stats-grid{grid-template-columns:1fr;} .quick-grid{grid-template-columns:1fr;} .user-chip .info{display:none;} .form-grid,.form-grid.three{grid-template-columns:1fr;}}
+  .sidebar-scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50;} .sidebar-scrim.show{display:block;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-close" id="sidebarClose"><i class="fas fa-xmark"></i></button>
+    <div class="brand"><i class="fas fa-truck-fast"></i><div><h1>TransitOps</h1><span>Driver Console</span></div></div>
+
+    <div class="nav-section-label">Overview</div>
+    <button class="nav-item active" data-page="dashboard"><i class="fas fa-gauge-high"></i> Dashboard</button>
+
+    <div class="nav-section-label">Operations</div>
+    <button class="nav-item" data-page="vehicles"><i class="fas fa-truck"></i> Vehicle Registry</button>
+    <button class="nav-item" data-page="requests"><i class="fas fa-inbox"></i> Trip Requests <span class="nav-badge" id="pendingTripBadge">0</span></button>
+    <button class="nav-item" data-page="maintenance"><i class="fas fa-screwdriver-wrench"></i> Maintenance</button>
+    <button class="nav-item" data-page="expenses"><i class="fas fa-gas-pump"></i> Fuel &amp; Expenses</button>
+
+    <div class="nav-section-label">Insights</div>
+    <button class="nav-item" data-page="reports"><i class="fas fa-chart-line"></i> Reports &amp; Analytics</button>
+    <button class="nav-item" data-page="profile"><i class="fas fa-user"></i> My Driver Profile</button>
+
+    <div class="sidebar-footer">
+      <div class="duty-card"><div class="duty-dot" id="dutyDot"></div><div><p id="dutyLine1">No driver profile set</p><p id="clockLine">--:--:--</p></div></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+      <div class="search-box"><i class="fas fa-magnifying-glass"></i><input type="text" id="globalSearch" placeholder="Search vehicles, requests..." /></div>
+      <div class="topbar-right">
+        <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i><span class="toggle-switch"></span></button>
+        <div class="user-menu">
+          <button class="icon-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="icon-dot" id="notifDot">0</span></button>
+          <div class="dropdown-panel notif" id="notifPanel"><div class="notif-header"><h4>Notifications</h4><span id="markAllRead">Mark all read</span></div><div id="notifList"></div></div>
+        </div>
+        <div class="user-menu">
+          <div class="user-chip" id="userChipBtn"><div class="avatar" id="avatarInit">D</div><div class="info"><p id="chipName">Driver</p><p id="chipStatusText">Not set up</p></div><i class="fas fa-chevron-down" style="font-size:.7rem;color:var(--text-muted)"></i></div>
+          <div class="dropdown-panel" id="userPanel">
+            <div class="dropdown-item" data-page="profile" style="display:flex;align-items:center;gap:.7rem;padding:.65rem .7rem;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;"><i class="fas fa-user" style="width:16px;color:var(--text-muted);"></i> My Driver Profile</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header"><div><h2>Fleet Dashboard <span class="connect-pill"><i class="fas fa-link"></i> synced with User console</span></h2><p id="dateLine"></p></div><button class="btn btn-primary" data-page="requests"><i class="fas fa-inbox"></i> View Requests</button></div>
+        <div class="filter-bar">
+          <select id="filterType"><option value="">All Vehicle Types</option><option>Light Truck</option><option>Heavy Truck</option><option>Van</option><option>Refrigerated</option><option>Trailer</option></select>
+          <select id="filterStatus"><option value="">All Vehicle Statuses</option><option>Available</option><option>On Trip</option><option>In Shop</option><option>Retired</option></select>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-bolt"></i> Quick Actions</h3></div>
+            <div class="quick-grid">
+              <div class="quick-action" data-page="vehicles"><i class="fas fa-truck"></i><p>Register Vehicle</p></div>
+              <div class="quick-action" data-page="profile"><i class="fas fa-id-card"></i><p>My Profile</p></div>
+              <div class="quick-action" data-page="requests"><i class="fas fa-inbox"></i><p>Trip Requests</p></div>
+              <div class="quick-action" data-page="maintenance"><i class="fas fa-screwdriver-wrench"></i><p>Log Maintenance</p></div>
+            </div>
+            <div class="card-header" style="margin-top:1.6rem;"><h3><i class="fas fa-list-check"></i> Recent Requests</h3><span class="btn btn-outline btn-sm" data-page="requests">View all</span></div>
+            <div class="table-wrap"><table><thead><tr><th>Trip</th><th>Route</th><th>Customer</th><th>Status</th></tr></thead><tbody id="recentTripsBody"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-chart-simple"></i> Vehicle Status Breakdown</h3></div>
+            <div id="statusChart"></div>
+            <div class="divider-label" style="margin-top:1.3rem;"><hr><span>FLEET UTILIZATION</span><hr></div>
+            <p style="font-size:2rem; font-weight:800;" id="utilBig">0%</p>
+            <p style="font-size:.78rem; color:var(--text-muted);">Vehicles on trip vs. active fleet</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MY DRIVER PROFILE -->
+      <section class="page" id="page-profile">
+        <div class="page-header"><div><h2>My Driver Profile</h2><p>This must be complete, not Suspended, and not license-expired before you can accept any trip request.</p></div></div>
+        <div class="banner-alert bad" id="profileBanner"></div>
+        <div class="card" style="max-width:820px;">
+          <form id="profileForm" novalidate>
+            <div class="form-grid">
+              <div class="input-group" data-req="true"><label><i class="fas fa-user"></i> Full Name <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="pf_name" required placeholder="e.g. Arjun Mehta" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter your full name.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-phone"></i> Contact Number <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="pf_contact" required placeholder="10-digit mobile number" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a valid 10-digit number.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-id-badge"></i> License Number <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="pf_license" required placeholder="e.g. GJ01 20230001234" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> License number is required.</span></div>
+              <div class="input-group has-select" data-req="true"><label><i class="fas fa-layer-group"></i> License Category <span class="req-star">*</span></label>
+                <div class="field-wrap"><select id="pf_cat" required><option value="">Select category</option><option>LMV</option><option>HMV</option><option>HGMV</option><option>Transport</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select a license category.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-calendar-days"></i> License Expiry Date <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="date" id="pf_expiry" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Expiry date must be today or later.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-shield-halved"></i> Safety Score (0–100) <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="pf_score" required min="0" max="100" placeholder="e.g. 85" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a score between 0 and 100.</span></div>
+              <div class="input-group has-select" data-req="true"><label><i class="fas fa-truck"></i> Preferred Vehicle Type <span class="req-star">*</span></label>
+                <div class="field-wrap"><select id="pf_vtype" required><option value="">Select type</option><option>Light Truck</option><option>Heavy Truck</option><option>Van</option><option>Refrigerated</option><option>Trailer</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select a preferred vehicle type.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-location-dot"></i> Home Region / Depot <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="pf_region" required placeholder="e.g. North Depot, Ahmedabad" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Region is required.</span></div>
+              <div class="input-group has-select" data-req="true"><label><i class="fas fa-toggle-on"></i> Duty Status <span class="req-star">*</span></label>
+                <div class="field-wrap"><select id="pf_status" required><option value="">Select status</option><option>Available</option><option>Off Duty</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select your current duty status.</span></div>
+            </div>
+            <div style="display:flex; gap:.8rem; justify-content:flex-end; margin-top:.4rem;">
+              <button type="submit" class="btn btn-primary" id="profileSubmitBtn"><i class="fas fa-circle-check"></i> Save Profile</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" id="profileSummaryCard" style="display:none;">
+          <div class="profile-hero">
+            <div class="profile-avatar" id="profAvatar">D</div>
+            <div>
+              <h2 id="profName">—</h2>
+              <p><i class="fas fa-id-badge"></i> <span id="profLicense">—</span></p>
+              <div class="profile-stats">
+                <div><p id="ps_status">—</p><p>Status</p></div>
+                <div><p id="ps_score">—</p><p>Safety Score</p></div>
+                <div><p id="ps_expiry">—</p><p>License Expiry</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VEHICLE REGISTRY -->
+      <section class="page" id="page-vehicles">
+        <div class="page-header"><div><h2>Vehicle Registry</h2><p>You need at least one Available vehicle before you can accept a trip request.</p></div></div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-plus"></i> Register New Vehicle</h3></div>
+          <form id="vehicleForm" novalidate>
+            <div class="form-grid three">
+              <div class="input-group" data-req="true"><label><i class="fas fa-hashtag"></i> Registration Number <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="v_reg" required placeholder="e.g. GJ01AB1234" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required and must be unique.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-truck"></i> Vehicle Name / Model <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="v_name" required placeholder="e.g. Tata 1109 Truck" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+              <div class="input-group has-select" data-req="true"><label><i class="fas fa-layer-group"></i> Type <span class="req-star">*</span></label>
+                <div class="field-wrap"><select id="v_type" required><option value="">Select type</option><option>Light Truck</option><option>Heavy Truck</option><option>Van</option><option>Refrigerated</option><option>Trailer</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-weight-hanging"></i> Max Load (kg) <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="v_load" required min="1" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a positive number.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-gauge"></i> Odometer (km) <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="v_odo" required min="0" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter 0 or more.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-indian-rupee-sign"></i> Acquisition Cost <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="v_cost" required min="0" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter 0 or more.</span></div>
+            </div>
+            <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="vehicleSubmitBtn"><i class="fas fa-plus"></i> Add Vehicle</button></div>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-list"></i> Fleet Vehicles</h3></div>
+          <div class="table-wrap"><table><thead><tr><th>Reg No.</th><th>Name / Model</th><th>Type</th><th>Max Load</th><th>Odometer</th><th>Acq. Cost</th><th>Status</th></tr></thead>
+          <tbody id="vehicleTableBody"></tbody></table></div>
+          <div id="vehicleEmpty"></div>
+        </div>
+      </section>
+
+      <!-- TRIP REQUESTS -->
+      <section class="page" id="page-requests">
+        <div class="page-header"><div><h2>Trip Requests</h2><p>Requests booked by customers on the User console appear here in real time. Accept or reject each one.</p></div></div>
+        <div class="banner-alert warn" id="gateBanner"></div>
+        <div class="banner-alert bad" id="tripBanner"></div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-inbox"></i> Incoming &amp; Active Requests</h3></div>
+          <div class="table-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Route</th><th>Type Needed</th><th>Cargo</th><th>Distance</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="tripTableBody"></tbody></table></div>
+          <div id="tripEmpty"></div>
+        </div>
+      </section>
+
+      <!-- MAINTENANCE -->
+      <section class="page" id="page-maintenance">
+        <div class="page-header"><div><h2>Maintenance</h2><p>Logging a record automatically moves the vehicle to In Shop.</p></div></div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-plus"></i> Log Maintenance</h3></div>
+          <form id="maintForm" novalidate>
+            <div class="form-grid">
+              <div class="input-group has-select" data-req="true"><label><i class="fas fa-truck"></i> Vehicle <span class="req-star">*</span></label>
+                <div class="field-wrap"><select id="m_vehicle" required><option value="">Select vehicle</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select a vehicle.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-calendar-days"></i> Date <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="date" id="m_date" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+              <div class="input-group full" data-req="true"><label><i class="fas fa-note-sticky"></i> Description <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="text" id="m_desc" required placeholder="e.g. Brake pad replacement" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+              <div class="input-group" data-req="true"><label><i class="fas fa-indian-rupee-sign"></i> Cost <span class="req-star">*</span></label>
+                <div class="field-wrap"><input type="number" id="m_cost" required min="0" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter 0 or more.</span></div>
+            </div>
+            <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="maintSubmitBtn"><i class="fas fa-plus"></i> Add Record — Sets Vehicle to In Shop</button></div>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-list"></i> Maintenance Log</h3></div>
+          <div class="table-wrap"><table><thead><tr><th>Reg No.</th><th>Date</th><th>Description</th><th>Cost</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="maintTableBody"></tbody></table></div>
+          <div id="maintEmpty"></div>
+        </div>
+      </section>
+
+      <!-- FUEL & EXPENSES -->
+      <section class="page" id="page-expenses">
+        <div class="page-header"><div><h2>Fuel &amp; Expense Management</h2><p>Log fuel, tolls/fines, and trip revenue per vehicle.</p></div></div>
+        <div class="tabs-bar" style="display:flex;gap:.4rem;margin-bottom:1.4rem;border-bottom:1px solid var(--divider);">
+          <button class="tab-btn active" data-tab="fuel" style="padding:.7rem 1.1rem;color:var(--text-muted);font-size:.83rem;font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:inherit;">Fuel Logs</button>
+          <button class="tab-btn" data-tab="expense" style="padding:.7rem 1.1rem;color:var(--text-muted);font-size:.83rem;font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:inherit;">Other Expenses</button>
+          <button class="tab-btn" data-tab="revenue" style="padding:.7rem 1.1rem;color:var(--text-muted);font-size:.83rem;font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:inherit;">Trip Revenue</button>
+        </div>
+
+        <div class="tab-content active" id="tab-fuel" style="display:block;">
+          <div class="card">
+            <form id="fuelForm" novalidate>
+              <div class="form-grid three">
+                <div class="input-group has-select" data-req="true"><label><i class="fas fa-truck"></i> Vehicle <span class="req-star">*</span></label>
+                  <div class="field-wrap"><select id="f_vehicle" required><option value="">Select vehicle</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select a vehicle.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-calendar-days"></i> Date <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="date" id="f_date" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-gas-pump"></i> Liters <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="number" id="f_liters" required min="0.1" step="0.1" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter a positive number.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-indian-rupee-sign"></i> Cost <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="number" id="f_cost" required min="0" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter 0 or more.</span></div>
+              </div>
+              <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="fuelSubmitBtn"><i class="fas fa-plus"></i> Add Fuel Log</button></div>
+            </form>
+          </div>
+          <div class="card"><div class="table-wrap"><table><thead><tr><th>Reg No.</th><th>Date</th><th>Liters</th><th>Cost</th></tr></thead><tbody id="fuelTableBody"></tbody></table></div><div id="fuelEmpty"></div></div>
+        </div>
+
+        <div class="tab-content" id="tab-expense" style="display:none;">
+          <div class="card">
+            <form id="expenseForm" novalidate>
+              <div class="form-grid three">
+                <div class="input-group has-select" data-req="true"><label><i class="fas fa-truck"></i> Vehicle <span class="req-star">*</span></label>
+                  <div class="field-wrap"><select id="e_vehicle" required><option value="">Select vehicle</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select a vehicle.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-calendar-days"></i> Date <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="date" id="e_date" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+                <div class="input-group has-select" data-req="true"><label><i class="fas fa-tag"></i> Type <span class="req-star">*</span></label>
+                  <div class="field-wrap"><select id="e_type" required><option value="">Select type</option><option>Toll</option><option>Parking</option><option>Fine</option><option>Other</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-indian-rupee-sign"></i> Amount <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="number" id="e_amount" required min="0" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter 0 or more.</span></div>
+              </div>
+              <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="expenseSubmitBtn"><i class="fas fa-plus"></i> Add Expense</button></div>
+            </form>
+          </div>
+          <div class="card"><div class="table-wrap"><table><thead><tr><th>Reg No.</th><th>Date</th><th>Type</th><th>Amount</th></tr></thead><tbody id="expenseTableBody"></tbody></table></div><div id="expenseEmpty"></div></div>
+        </div>
+
+        <div class="tab-content" id="tab-revenue" style="display:none;">
+          <div class="card">
+            <form id="revenueForm" novalidate>
+              <div class="form-grid three">
+                <div class="input-group has-select" data-req="true"><label><i class="fas fa-truck"></i> Vehicle <span class="req-star">*</span></label>
+                  <div class="field-wrap"><select id="r_vehicle" required><option value="">Select vehicle</option></select><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Select a vehicle.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-calendar-days"></i> Date <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="date" id="r_date" required /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Required.</span></div>
+                <div class="input-group" data-req="true"><label><i class="fas fa-indian-rupee-sign"></i> Amount <span class="req-star">*</span></label>
+                  <div class="field-wrap"><input type="number" id="r_amount" required min="0" /><i class="fas fa-check-circle validation-icon"></i><i class="fas fa-circle-exclamation validation-icon"></i></div>
+                  <span class="error-msg"><i class="fas fa-triangle-exclamation"></i> Enter 0 or more.</span></div>
+              </div>
+              <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="revenueSubmitBtn"><i class="fas fa-plus"></i> Add Revenue</button></div>
+            </form>
+          </div>
+          <div class="card"><div class="table-wrap"><table><thead><tr><th>Reg No.</th><th>Date</th><th>Amount</th></tr></thead><tbody id="revenueTableBody"></tbody></table></div><div id="revenueEmpty"></div></div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="page" id="page-reports">
+        <div class="page-header"><div><h2>Reports &amp; Analytics</h2><p>Per-vehicle efficiency, cost, and ROI, computed from what you've logged.</p></div><button class="btn btn-outline" id="exportCsvBtn"><i class="fas fa-file-csv"></i> Export CSV</button></div>
+        <div class="stats-grid" id="reportStatsGrid" style="grid-template-columns:repeat(2,1fr);"></div>
+        <div class="card">
+          <div class="card-header"><h3><i class="fas fa-table"></i> Vehicle Report</h3></div>
+          <div class="table-wrap"><table><thead><tr><th>Reg No.</th><th>Fuel Efficiency (km/L)</th><th>Fuel Cost</th><th>Maintenance Cost</th><th>Operational Cost</th><th>Revenue</th><th>ROI</th></tr></thead>
+          <tbody id="reportTableBody"></tbody></table></div>
+          <div id="reportEmpty"></div>
+        </div>
+      </section>
+
+    </div>
+    <footer class="appfoot">FleetOps Driver Console · connected live to the User Book &amp; Track console via shared trip data</footer>
+  </div>
+</div>
+
+<!-- Trip details -->
+<div class="modal-overlay" id="modalTripDetails">
+  <div class="modal-box wide">
+    <div class="modal-head"><h3><i class="fas fa-route"></i> Trip Details</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
+    <div class="modal-body" id="tripDetailsBody"></div>
+    <div class="modal-foot"><button class="btn btn-outline" data-close>Close</button></div>
+  </div>
+</div>
+
+<!-- Assign vehicle on accept -->
+<div class="modal-overlay" id="modalAssign">
+  <div class="modal-box">
+    <div class="modal-head"><h3><i class="fas fa-truck"></i> Assign Vehicle &amp; Accept</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <p style="font-size:.85rem;color:var(--text-secondary);">Pick the vehicle you'll use for this trip. Vehicles matching the requested type are highlighted.</p>
+      <div class="vehicle-pick" id="vehiclePickList"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-success" id="confirmAssignBtn"><i class="fas fa-check"></i> Accept Request</button></div>
+  </div>
+</div>
+
+<!-- Confirm action -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="confirmTitle"><i class="fas fa-triangle-exclamation"></i> Confirm</h3><button class="modal-close" data-close><i class="fas fa-xmark"></i></button></div>
+    <div class="modal-body"><div class="confirm-icon warn"><i class="fas fa-triangle-exclamation"></i></div><p id="confirmBody" style="font-size:.92rem; color:var(--text-secondary); line-height:1.6;"></p></div>
+    <div class="modal-foot"><button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-danger" id="confirmActionBtn">Confirm</button></div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+(function(){
+  /* THEME */
+  const themeToggle=document.getElementById('themeToggle'), themeIcon=document.getElementById('themeIcon');
+  function setTheme(t){ document.documentElement.setAttribute('data-theme',t); localStorage.setItem('fleetops-driver-theme',t); themeIcon.className = t==='dark'?'fas fa-sun':'fas fa-moon'; }
+  (function initTheme(){ const s=localStorage.getItem('fleetops-driver-theme'); if(s==='dark'||s==='light'){setTheme(s);return;} setTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'); })();
+  themeToggle.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+
+  /* SHARED STORAGE — connects this file to the User console */
+  const K_DRIVER='to_driver_profile', K_VEHICLES='to_vehicles', K_REQUESTS='to_trip_requests';
+  async function storeGet(key){ try{ const r=await window.storage.get(key,true); return r? JSON.parse(r.value): null; }catch(e){ return null; } }
+  async function storeSet(key,val){ try{ await window.storage.set(key, JSON.stringify(val), true); }catch(e){ console.error('storage set failed',e); } }
+
+  const state = { driver:null, vehicles:[], requests:[], maintenance:[], fuelLogs:[], expenses:[], revenues:[] };
+  let notifSeq=0, notifications=[], lastReqIds=new Set();
+
+  const $=(s,r)=> (r||document).querySelector(s);
+  const $all=(s,r)=> Array.from((r||document).querySelectorAll(s));
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  function money(n){ return '₹' + (Math.round(n*100)/100).toLocaleString('en-IN'); }
+  function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+
+  function showToast(title,sub,type){ type=type||'success'; const icon= type==='success'?'fa-circle-check':type==='error'?'fa-circle-exclamation':'fa-circle-info'; const stack=document.getElementById('toastStack'); const el=document.createElement('div'); el.className='toast '+type; el.innerHTML=`<i class="fas ${icon} tico"></i><div><p class="tt">${title}</p><p class="ts">${sub||''}</p></div><button class="toast-close"><i class="fas fa-xmark"></i></button>`; stack.appendChild(el); el.querySelector('.toast-close').addEventListener('click', ()=>removeToast(el)); setTimeout(()=>removeToast(el),4200); }
+  function removeToast(el){ if(!el.parentNode) return; el.classList.add('hide'); setTimeout(()=>el.remove(),250); }
+  function pushNotif(title){ notifications.unshift({id:++notifSeq,title,time:'just now',read:false}); renderNotifications(); }
+  function renderNotifications(){
+    const list=document.getElementById('notifList'); const unread=notifications.filter(n=>!n.read).length;
+    const dot=document.getElementById('notifDot'); dot.style.display=unread?'flex':'none'; dot.textContent=unread;
+    list.innerHTML = notifications.map(n=>`<div class="notif-item ${n.read?'read':''}" data-id="${n.id}"><div class="dot"></div><div><p class="title">${n.title}</p><p class="time">${n.time}</p></div></div>`).join('') || `<div class="empty-state" style="padding:1.5rem;"><p class="sub">No notifications yet.</p></div>`;
+    list.querySelectorAll('.notif-item').forEach(el=> el.addEventListener('click', ()=>{ const n=notifications.find(x=>x.id==el.dataset.id); if(n){n.read=true; renderNotifications();} }));
+  }
+  document.getElementById('markAllRead').addEventListener('click', ()=>{ notifications.forEach(n=>n.read=true); renderNotifications(); });
+
+  /* NAV */
+  function goToPage(name){
+    $all('.page').forEach(p=>p.classList.remove('active'));
+    const t=document.getElementById('page-'+name); if(t) t.classList.add('active');
+    $all('.nav-item[data-page]').forEach(n=> n.classList.toggle('active', n.dataset.page===name));
+    window.scrollTo({top:0,behavior:'smooth'}); closeSidebarMobile();
+    if(name==='reports') renderReports();
+  }
+  $all('[data-page]').forEach(el=> el.addEventListener('click', ()=>goToPage(el.dataset.page)));
+  const sidebar=document.getElementById('sidebar'), scrim=document.getElementById('sidebarScrim');
+  document.getElementById('hamburgerBtn').addEventListener('click', ()=>{ sidebar.classList.add('open'); scrim.classList.add('show'); });
+  document.getElementById('sidebarClose').addEventListener('click', closeSidebarMobile);
+  scrim.addEventListener('click', closeSidebarMobile);
+  function closeSidebarMobile(){ sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+  function setupDropdown(btnId,panelId){ const btn=document.getElementById(btnId), panel=document.getElementById(panelId); btn.addEventListener('click', e=>{ e.stopPropagation(); $all('.dropdown-panel.open').forEach(p=>{if(p!==panel)p.classList.remove('open');}); panel.classList.toggle('open'); }); }
+  setupDropdown('notifBtn','notifPanel'); setupDropdown('userChipBtn','userPanel');
+  document.addEventListener('click', ()=> $all('.dropdown-panel.open').forEach(p=>p.classList.remove('open')));
+  $all('.dropdown-panel').forEach(p=>p.addEventListener('click', e=>e.stopPropagation()));
+  $all('.tab-btn').forEach(tb=>{ tb.addEventListener('click', function(){ $all('.tab-btn').forEach(b=>{b.classList.remove('active'); b.style.color='var(--text-muted)'; b.style.borderColor='transparent';}); this.classList.add('active'); this.style.color='var(--input-focus)'; this.style.borderColor='var(--input-focus)'; $all('.tab-content').forEach(c=>{c.classList.remove('active'); c.style.display='none';}); const tc=document.getElementById('tab-'+this.dataset.tab); tc.classList.add('active'); tc.style.display='block'; }); });
+
+  function openModal(id){ document.getElementById(id).classList.add('open'); } function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+  $all('[data-close]').forEach(btn=> btn.addEventListener('click', ()=> btn.closest('.modal-overlay').classList.remove('open')));
+  $all('.modal-overlay').forEach(ov=> ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('open'); }));
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') $all('.modal-overlay.open').forEach(m=>m.classList.remove('open')); });
+
+  function pill(status){ return `<span class="badge ${statusClass(status)}"><i class="fas ${statusIcon(status)}"></i> ${status}</span>`; }
+  function statusClass(s){ return {'Available':'available','On Trip':'progress','In Shop':'inshop','Retired':'retired','Off Duty':'offduty','Suspended':'suspended','Requested':'pending','Accepted':'assigned','In Transit':'progress','Completed':'completed','Rejected':'cancelled','Cancelled':'cancelled'}[s]||'pending'; }
+  function statusIcon(s){ return {'Available':'fa-circle-check','On Trip':'fa-road','In Shop':'fa-screwdriver-wrench','Retired':'fa-ban','Off Duty':'fa-moon','Suspended':'fa-triangle-exclamation','Requested':'fa-hourglass-half','Accepted':'fa-truck','In Transit':'fa-road','Completed':'fa-flag-checkered','Rejected':'fa-xmark','Cancelled':'fa-xmark'}[s]||'fa-circle'; }
+  function priorityIcon(p){ return {Low:'fa-arrow-down',Medium:'fa-equals',High:'fa-triangle-exclamation'}[p]||'fa-equals'; }
+  function findVehicle(reg){ return state.vehicles.find(v=>v.reg===reg); }
+
+  /* GENERIC FORM VALIDATION HELPERS */
+  function validateField(el, rule){ const g=el.closest('.input-group'); const ok=rule(el.value); g.classList.remove('valid','invalid'); g.classList.add(ok?'valid':'invalid'); return ok; }
+  function wireForm(fields){
+    Object.keys(fields).forEach(id=>{
+      const el=document.getElementById(id); if(!el) return;
+      const evt=(el.tagName==='SELECT'||el.type==='date')?'change':'input';
+      el.addEventListener(evt, ()=> validateField(el, fields[id]));
+      el.addEventListener('blur', ()=> validateField(el, fields[id]));
+    });
+  }
+  function validateAll(fields){ let ok=true; Object.keys(fields).forEach(id=>{ const el=document.getElementById(id); if(!validateField(el, fields[id])) ok=false; }); return ok; }
+  function clearValidation(fields){ Object.keys(fields).forEach(id=>{ const el=document.getElementById(id); const g=el.closest('.input-group'); g.classList.remove('valid','invalid'); }); }
+
+  /* ================= DRIVER READINESS GATE ================= */
+  function driverIssues(){
+    const issues=[];
+    if(!state.driver){ issues.push('Complete and save your Driver Profile.'); return issues; }
+    if(state.driver.status==='Suspended') issues.push('Your driver profile is Suspended — you cannot accept trips.');
+    if(state.driver.licenseExpiry < todayISO()) issues.push('Your license expired on '+fmtDate(state.driver.licenseExpiry)+'.');
+    if(state.driver.status==='Off Duty') issues.push('You are marked Off Duty — switch to Available in your profile.');
+    if(state.vehicles.filter(v=>v.status==='Available').length===0) issues.push('Register at least one Available vehicle.');
+    return issues;
+  }
+
+  /* ================= MY DRIVER PROFILE ================= */
+  const PROFILE_FIELDS = { pf_name:v=>v.trim().length>1, pf_contact:v=>/^\d{10}$/.test(v.trim()), pf_license:v=>v.trim().length>1,
+    pf_cat:v=>!!v, pf_expiry:v=>v>=todayISO(), pf_score:v=>{const n=parseFloat(v); return !isNaN(n)&&n>=0&&n<=100;}, pf_vtype:v=>!!v, pf_region:v=>v.trim().length>1, pf_status:v=>!!v };
+  wireForm(PROFILE_FIELDS);
+  document.getElementById('pf_expiry').min = todayISO();
+
+  document.getElementById('profileForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validateAll(PROFILE_FIELDS)){ document.getElementById('profileBanner').textContent='Please resolve the highlighted fields.'; document.getElementById('profileBanner').classList.add('show'); return; }
+    document.getElementById('profileBanner').classList.remove('show');
+    const expired = $('#pf_expiry').value < todayISO();
+    const chosenStatus = $('#pf_status').value;
+    const status = expired ? 'Suspended' : chosenStatus;
+    const driver = {
+      id: (state.driver && state.driver.id) || 'DRV-'+Date.now(),
+      name: $('#pf_name').value.trim(), contact: $('#pf_contact').value.trim(), license: $('#pf_license').value.trim(),
+      licenseCategory: $('#pf_cat').value, licenseExpiry: $('#pf_expiry').value, safetyScore: parseFloat($('#pf_score').value),
+      preferredVehicleType: $('#pf_vtype').value, region: $('#pf_region').value.trim(), status
+    };
+    state.driver = driver;
+    await storeSet(K_DRIVER, driver);
+    showToast('Profile saved', expired ? 'Saved — but your license is expired, so you are marked Suspended.' : 'Your driver profile is up to date.', expired?'error':'success');
+    refreshAll();
+  });
+
+  function renderProfilePage(){
+    const d = state.driver;
+    document.getElementById('profileSummaryCard').style.display = d ? 'block' : 'none';
+    if(!d) return;
+    $('#pf_name').value=d.name; $('#pf_contact').value=d.contact; $('#pf_license').value=d.license; $('#pf_cat').value=d.licenseCategory;
+    $('#pf_expiry').value=d.licenseExpiry; $('#pf_score').value=d.safetyScore; $('#pf_vtype').value=d.preferredVehicleType; $('#pf_region').value=d.region;
+    $('#pf_status').value = d.status==='Suspended' ? '' : d.status;
+    document.getElementById('profName').textContent = d.name;
+    document.getElementById('profLicense').textContent = d.license + ' · ' + d.licenseCategory;
+    document.getElementById('profAvatar').textContent = d.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    document.getElementById('ps_status').textContent = d.status;
+    document.getElementById('ps_score').textContent = d.safetyScore;
+    document.getElementById('ps_expiry').textContent = fmtDate(d.licenseExpiry);
+  }
+
+  /* ================= VEHICLE REGISTRY ================= */
+  const VEHICLE_FIELDS = { v_reg:v=>v.trim() && !findVehicle(v.trim().toUpperCase()), v_name:v=>v.trim().length>0, v_type:v=>!!v,
+    v_load:v=>parseFloat(v)>0, v_odo:v=>parseFloat(v)>=0, v_cost:v=>parseFloat(v)>=0 };
+  wireForm(VEHICLE_FIELDS);
+
+  document.getElementById('vehicleForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validateAll(VEHICLE_FIELDS)){ showToast('Fix the highlighted fields','Vehicle not added.','error'); return; }
+    const reg = $('#v_reg').value.trim().toUpperCase();
+    state.vehicles.push({ reg, name:$('#v_name').value.trim(), type:$('#v_type').value, maxLoad:parseFloat($('#v_load').value), odometer:parseFloat($('#v_odo').value), cost:parseFloat($('#v_cost').value), status:'Available' });
+    await storeSet(K_VEHICLES, state.vehicles);
+    e.target.reset(); clearValidation(VEHICLE_FIELDS);
+    showToast('Vehicle registered', reg + ' added to the fleet.');
+    refreshAll();
+  });
+
+  function renderVehicles(){
+    const tbody=$('#vehicleTableBody');
+    tbody.innerHTML = state.vehicles.map(v=>`<tr><td><strong>${v.reg}</strong></td><td>${v.name}</td><td>${v.type}</td><td>${v.maxLoad} kg</td><td>${v.odometer} km</td><td>${money(v.cost)}</td><td>${pill(v.status)}</td></tr>`).join('');
+    $('#vehicleEmpty').innerHTML = state.vehicles.length===0 ? `<div class="empty-state"><i class="fas fa-truck"></i><p class="main">No vehicles registered yet</p><p class="sub">Add your first vehicle above.</p></div>` : '';
+    populateVehicleSelects();
+  }
+
+  function populateVehicleSelects(){
+    ['#m_vehicle','#f_vehicle','#e_vehicle','#r_vehicle'].forEach(sel=>{
+      const cur=$(sel).value;
+      $(sel).innerHTML = '<option value="">Select vehicle</option>' + state.vehicles.map(v=>`<option value="${v.reg}">${v.reg} — ${v.name}</option>`).join('');
+      if(state.vehicles.some(v=>v.reg===cur)) $(sel).value=cur;
+    });
+  }
+
+  /* ================= TRIP REQUESTS ================= */
+  function renderGateBanner(){
+    const issues = driverIssues();
+    const gb = document.getElementById('gateBanner');
+    if(issues.length){
+      gb.innerHTML = `<i class="fas fa-lock"></i><div>Before you can accept any trip request, resolve:<ul>${issues.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+      gb.classList.add('show');
+    } else { gb.classList.remove('show'); }
+    return issues;
+  }
+
+  let pendingAcceptId=null;
+  function renderTripRequests(){
+    const issues = renderGateBanner();
+    const tbody=$('#tripTableBody');
+    const list=[...state.requests].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    tbody.innerHTML = list.map(t=>{
+      let actions='';
+      if(t.status==='Requested'){
+        actions = `<div class="row-actions"><button class="row-btn accept" data-accept="${t.id}" ${issues.length?'disabled title="Complete your profile & register a vehicle first"':''}><i class="fas fa-check"></i> Accept</button><button class="row-btn reject" data-reject="${t.id}"><i class="fas fa-xmark"></i> Reject</button></div>`;
+      } else if(t.status==='Accepted'){
+        actions = `<div class="row-actions"><button class="row-btn accept" data-start="${t.id}"><i class="fas fa-road"></i> Start Trip</button><button class="row-btn reject" data-cancel="${t.id}"><i class="fas fa-ban"></i> Cancel</button></div>`;
+      } else if(t.status==='In Transit'){
+        actions = `<div class="row-actions"><button class="row-btn accept" data-complete="${t.id}"><i class="fas fa-flag-checkered"></i> Complete</button><button class="row-btn reject" data-cancel="${t.id}"><i class="fas fa-ban"></i> Cancel</button></div>`;
+      } else {
+        actions = `<button class="row-icon-btn" data-view="${t.id}" title="View"><i class="fas fa-eye"></i></button>`;
+      }
+      return `<tr><td><strong>${t.id}</strong></td><td>${t.name}<br><span style="font-size:.7rem;color:var(--text-muted);">${t.phone}</span></td><td style="font-size:.78rem;">${t.pickup} → ${t.drop}</td><td>${t.vehicleType||'—'}</td><td>${t.weight} kg</td><td>${t.distance} km</td><td><span class="badge pending"><i class="fas ${priorityIcon(t.priority)}"></i> ${t.priority}</span></td><td>${pill(t.status)}</td><td>${actions}</td></tr>`;
+    }).join('');
+    $('#tripEmpty').innerHTML = state.requests.length===0 ? `<div class="empty-state"><i class="fas fa-inbox"></i><p class="main">No trip requests yet</p><p class="sub">Requests booked on the User console will appear here automatically.</p></div>` : '';
+    document.getElementById('pendingTripBadge').textContent = state.requests.filter(t=>t.status==='Requested').length;
+    renderDashboardRecentTrips();
+  }
+
+  document.getElementById('tripTableBody').addEventListener('click', function(e){
+    const acceptBtn=e.target.closest('[data-accept]'), rejectBtn=e.target.closest('[data-reject]'), startBtn=e.target.closest('[data-start]'), completeBtn=e.target.closest('[data-complete]'), cancelBtn=e.target.closest('[data-cancel]'), viewBtn=e.target.closest('[data-view]');
+    if(acceptBtn){
+      const issues=driverIssues();
+      if(issues.length){ document.getElementById('tripBanner').textContent='Cannot accept — '+issues.join('; '); document.getElementById('tripBanner').classList.add('show'); goToPage('requests'); return; }
+      document.getElementById('tripBanner').classList.remove('show');
+      openAssignModal(acceptBtn.dataset.accept);
+    }
+    if(rejectBtn){ rejectRequest(rejectBtn.dataset.reject); }
+    if(startBtn){ startTrip(startBtn.dataset.start); }
+    if(completeBtn){ completeTrip(completeBtn.dataset.complete); }
+    if(cancelBtn){ cancelTrip(cancelBtn.dataset.cancel); }
+    if(viewBtn){ viewTripDetails(viewBtn.dataset.view); }
+  });
+
+  function openAssignModal(id){
+    pendingAcceptId=id;
+    const req = state.requests.find(t=>t.id===id);
+    const avail = state.vehicles.filter(v=>v.status==='Available');
+    const list = document.getElementById('vehiclePickList');
+    list.innerHTML = avail.map((v,i)=>`<label class="${v.type===req.vehicleType?'match':''}"><input type="radio" name="vpick" value="${v.reg}" ${i===0?'checked':''}/> ${v.reg} — ${v.name} (${v.type}, max ${v.maxLoad}kg)${v.type===req.vehicleType?' <span class="badge available" style="margin-left:.4rem;">Best match</span>':''}</label>`).join('');
+    openModal('modalAssign');
+  }
+  document.getElementById('confirmAssignBtn').addEventListener('click', async function(){
+    const picked = document.querySelector('input[name=vpick]:checked');
+    if(!picked){ showToast('Select a vehicle','Choose a vehicle to continue.','error'); return; }
+    await acceptRequest(pendingAcceptId, picked.value);
+    closeModal('modalAssign');
+  });
+
+  async function acceptRequest(id, vehicleReg){
+    const req = state.requests.find(t=>t.id===id); if(!req) return;
+    const vehicle = findVehicle(vehicleReg); if(!vehicle) return;
+    req.status='Accepted';
+    req.driverId=state.driver.id; req.driverName=state.driver.name; req.driverPhone=state.driver.contact;
+    req.driverLicense=state.driver.license; req.driverLicenseCategory=state.driver.licenseCategory; req.driverSafetyScore=state.driver.safetyScore;
+    req.vehicleReg=vehicle.reg; req.vehicleName=vehicle.name; req.vehicleActualType=vehicle.type;
+    vehicle.status='On Trip'; state.driver.status='On Trip';
+    await Promise.all([storeSet(K_REQUESTS, state.requests), storeSet(K_VEHICLES, state.vehicles), storeSet(K_DRIVER, state.driver)]);
+    showToast('Request accepted', req.id+' assigned to '+vehicle.reg+'.');
+    refreshAll();
+  }
+  async function rejectRequest(id){
+    const req = state.requests.find(t=>t.id===id); if(!req) return;
+    req.status='Rejected';
+    await storeSet(K_REQUESTS, state.requests);
+    showToast('Request rejected', req.id+' was rejected.', 'info');
+    refreshAll();
+  }
+  async function startTrip(id){
+    const req = state.requests.find(t=>t.id===id); if(!req) return;
+    req.status='In Transit'; req.progress=0;
+    await storeSet(K_REQUESTS, state.requests);
+    showToast('Trip started', req.id+' is now In Transit.');
+    refreshAll();
+  }
+  async function completeTrip(id){
+    const req = state.requests.find(t=>t.id===id); if(!req) return;
+    req.status='Completed'; req.progress=100;
+    const vehicle=findVehicle(req.vehicleReg); if(vehicle){ vehicle.status='Available'; vehicle.odometer+=req.distance; }
+    if(state.driver && state.driver.status==='On Trip') state.driver.status='Available';
+    await Promise.all([storeSet(K_REQUESTS, state.requests), storeSet(K_VEHICLES, state.vehicles), storeSet(K_DRIVER, state.driver)]);
+    showToast('Trip completed', req.id+' delivered to '+req.drop+'.');
+    refreshAll();
+  }
+  async function cancelTrip(id){
+    const req = state.requests.find(t=>t.id===id); if(!req) return;
+    req.status='Cancelled';
+    const vehicle=findVehicle(req.vehicleReg); if(vehicle) vehicle.status='Available';
+    if(state.driver && state.driver.status==='On Trip') state.driver.status='Available';
+    await Promise.all([storeSet(K_REQUESTS, state.requests), storeSet(K_VEHICLES, state.vehicles), storeSet(K_DRIVER, state.driver)]);
+    showToast('Trip cancelled', req.id+' was cancelled.', 'info');
+    refreshAll();
+  }
+  function viewTripDetails(id){
+    const t=state.requests.find(x=>x.id===id); if(!t) return;
+    document.getElementById('tripDetailsBody').innerHTML = `
+      <div class="detail-row"><span class="k"><i class="fas fa-hashtag"></i> Trip ID</span><span class="v">${t.id}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-user"></i> Customer</span><span class="v">${t.name} · ${t.phone}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-route"></i> Route</span><span class="v">${t.pickup} → ${t.drop}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-calendar-days"></i> Date &amp; Time</span><span class="v">${fmtDate(t.date)} · ${t.time}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Type Needed</span><span class="v">${t.vehicleType}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-weight-hanging"></i> Cargo</span><span class="v">${t.weight} kg</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-road"></i> Distance</span><span class="v">${t.distance} km</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-note-sticky"></i> Notes</span><span class="v">${t.notes||'—'}</span></div>
+      <div class="detail-row"><span class="k"><i class="fas fa-circle-info"></i> Status</span><span class="v">${pill(t.status)}</span></div>
+      ${t.vehicleReg?`<div class="detail-row"><span class="k"><i class="fas fa-truck"></i> Assigned Vehicle</span><span class="v">${t.vehicleReg} — ${t.vehicleName}</span></div>`:''}`;
+    openModal('modalTripDetails');
+  }
+
+  function renderDashboardRecentTrips(){
+    const tbody=$('#recentTripsBody'); const recent=[...state.requests].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
+    tbody.innerHTML = recent.map(t=>`<tr><td><strong>${t.id}</strong></td><td style="font-size:.78rem;">${t.pickup} → ${t.drop}</td><td>${t.name}</td><td>${pill(t.status)}</td></tr>`).join('') || `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No requests yet.</td></tr>`;
+  }
+
+  /* ================= MAINTENANCE ================= */
+  const MAINT_FIELDS = { m_vehicle:v=>!!v, m_date:v=>!!v, m_desc:v=>v.trim().length>0, m_cost:v=>parseFloat(v)>=0 };
+  wireForm(MAINT_FIELDS);
+  document.getElementById('maintForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validateAll(MAINT_FIELDS)){ showToast('Fix the highlighted fields','Record not added.','error'); return; }
+    const reg=$('#m_vehicle').value;
+    state.maintenance.push({ reg, date:$('#m_date').value, desc:$('#m_desc').value.trim(), cost:parseFloat($('#m_cost').value), done:false });
+    const vehicle=findVehicle(reg); if(vehicle) vehicle.status='In Shop';
+    await storeSet(K_VEHICLES, state.vehicles);
+    e.target.reset(); clearValidation(MAINT_FIELDS);
+    showToast('Maintenance logged', reg + ' set to In Shop.');
+    refreshAll();
+  });
+  function renderMaintenance(){
+    const tbody=$('#maintTableBody');
+    tbody.innerHTML = state.maintenance.map((m,idx)=>`<tr><td><strong>${m.reg}</strong></td><td>${fmtDate(m.date)}</td><td>${m.desc}</td><td>${money(m.cost)}</td><td>${pill(m.done?'Available':'In Shop')}</td><td>${m.done?'<span style="color:var(--text-muted); font-size:.78rem;">Closed</span>':`<button class="row-btn accept" data-mclose="${idx}"><i class="fas fa-check"></i> Mark Complete</button>`}</td></tr>`).join('');
+    $('#maintEmpty').innerHTML = state.maintenance.length===0 ? `<div class="empty-state"><i class="fas fa-screwdriver-wrench"></i><p class="main">No maintenance records yet</p><p class="sub">Log one above.</p></div>` : '';
+  }
+  document.getElementById('maintTableBody').addEventListener('click', async function(e){
+    const btn=e.target.closest('[data-mclose]'); if(!btn) return;
+    const rec=state.maintenance[btn.dataset.mclose]; rec.done=true; const vehicle=findVehicle(rec.reg); if(vehicle) vehicle.status='Available';
+    await storeSet(K_VEHICLES, state.vehicles);
+    showToast('Vehicle returned', rec.reg + ' is back to Available.');
+    refreshAll();
+  });
+
+  /* ================= FUEL / EXPENSES / REVENUE ================= */
+  const FUEL_FIELDS = { f_vehicle:v=>!!v, f_date:v=>!!v, f_liters:v=>parseFloat(v)>0, f_cost:v=>parseFloat(v)>=0 };
+  wireForm(FUEL_FIELDS);
+  document.getElementById('fuelForm').addEventListener('submit', function(e){
+    e.preventDefault(); if(!validateAll(FUEL_FIELDS)){ showToast('Fix the highlighted fields','Log not added.','error'); return; }
+    state.fuelLogs.push({ reg:$('#f_vehicle').value, date:$('#f_date').value, liters:parseFloat($('#f_liters').value), cost:parseFloat($('#f_cost').value) });
+    e.target.reset(); clearValidation(FUEL_FIELDS); showToast('Fuel log added','Recorded successfully.'); refreshAll();
+  });
+  function renderFuel(){ const tbody=$('#fuelTableBody'); tbody.innerHTML=state.fuelLogs.map(f=>`<tr><td><strong>${f.reg}</strong></td><td>${fmtDate(f.date)}</td><td>${f.liters} L</td><td>${money(f.cost)}</td></tr>`).join(''); $('#fuelEmpty').innerHTML = state.fuelLogs.length===0?`<div class="empty-state"><i class="fas fa-gas-pump"></i><p class="main">No fuel logs yet</p></div>`:''; }
+
+  const EXPENSE_FIELDS = { e_vehicle:v=>!!v, e_date:v=>!!v, e_type:v=>!!v, e_amount:v=>parseFloat(v)>=0 };
+  wireForm(EXPENSE_FIELDS);
+  document.getElementById('expenseForm').addEventListener('submit', function(e){
+    e.preventDefault(); if(!validateAll(EXPENSE_FIELDS)){ showToast('Fix the highlighted fields','Expense not added.','error'); return; }
+    state.expenses.push({ reg:$('#e_vehicle').value, date:$('#e_date').value, type:$('#e_type').value, amount:parseFloat($('#e_amount').value) });
+    e.target.reset(); clearValidation(EXPENSE_FIELDS); showToast('Expense added','Recorded successfully.'); refreshAll();
+  });
+  function renderExpenses(){ const tbody=$('#expenseTableBody'); tbody.innerHTML=state.expenses.map(x=>`<tr><td><strong>${x.reg}</strong></td><td>${fmtDate(x.date)}</td><td>${x.type}</td><td>${money(x.amount)}</td></tr>`).join(''); $('#expenseEmpty').innerHTML = state.expenses.length===0?`<div class="empty-state"><i class="fas fa-receipt"></i><p class="main">No expenses yet</p></div>`:''; }
+
+  const REVENUE_FIELDS = { r_vehicle:v=>!!v, r_date:v=>!!v, r_amount:v=>parseFloat(v)>=0 };
+  wireForm(REVENUE_FIELDS);
+  document.getElementById('revenueForm').addEventListener('submit', function(e){
+    e.preventDefault(); if(!validateAll(REVENUE_FIELDS)){ showToast('Fix the highlighted fields','Revenue not added.','error'); return; }
+    state.revenues.push({ reg:$('#r_vehicle').value, date:$('#r_date').value, amount:parseFloat($('#r_amount').value) });
+    e.target.reset(); clearValidation(REVENUE_FIELDS); showToast('Revenue added','Recorded successfully.'); refreshAll();
+  });
+  function renderRevenue(){ const tbody=$('#revenueTableBody'); tbody.innerHTML=state.revenues.map(r=>`<tr><td><strong>${r.reg}</strong></td><td>${fmtDate(r.date)}</td><td>${money(r.amount)}</td></tr>`).join(''); $('#revenueEmpty').innerHTML = state.revenues.length===0?`<div class="empty-state"><i class="fas fa-sack-dollar"></i><p class="main">No revenue entries yet</p></div>`:''; }
+
+  /* ================= DASHBOARD ================= */
+  function chartRow(label,count,total,color,icon){ const pct=total?Math.round((count/total)*100):0; return `<div class="chart-row"><div class="chart-label"><i class="fas ${icon}" style="color:${color};"></i>${label}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%; background:${color};"></div></div><div class="chart-value">${count} · ${pct}%</div></div>`; }
+  function renderDashboard(){
+    document.getElementById('dateLine').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+    const typeFilter=$('#filterType').value, statusFilter=$('#filterStatus').value;
+    let vehicles=state.vehicles; if(typeFilter) vehicles=vehicles.filter(v=>v.type===typeFilter); if(statusFilter) vehicles=vehicles.filter(v=>v.status===statusFilter);
+
+    const activeVehicles=vehicles.filter(v=>v.status!=='Retired').length;
+    const availableVehicles=vehicles.filter(v=>v.status==='Available').length;
+    const maintVehicles=vehicles.filter(v=>v.status==='In Shop').length;
+    const activeTrips=state.requests.filter(t=>t.status==='In Transit').length;
+    const pendingTrips=state.requests.filter(t=>t.status==='Requested').length;
+    const util = activeVehicles>0 ? Math.round((vehicles.filter(v=>v.status==='On Trip').length/activeVehicles)*100) : 0;
+
+    document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card"><div class="stat-icon" style="background:var(--info-bg); color:var(--info);"><i class="fas fa-truck"></i></div><h3>${activeVehicles}</h3><p class="label">Active Vehicles</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--success-bg); color:var(--success);"><i class="fas fa-circle-check"></i></div><h3>${availableVehicles}</h3><p class="label">Available Vehicles</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--warning-bg); color:var(--warning);"><i class="fas fa-screwdriver-wrench"></i></div><h3>${maintVehicles}</h3><p class="label">In Maintenance</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--info-bg); color:var(--info);"><i class="fas fa-road"></i></div><h3>${activeTrips}</h3><p class="label">Active Trips</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--warning-bg); color:var(--warning);"><i class="fas fa-hourglass-half"></i></div><h3>${pendingTrips}</h3><p class="label">Pending Requests</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--badge-bg); color:var(--icon-color);"><i class="fas fa-id-card"></i></div><h3>${state.driver ? state.driver.status : '—'}</h3><p class="label">My Duty Status</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--info-bg); color:var(--info);"><i class="fas fa-gauge-high"></i></div><h3>${util}%</h3><p class="label">Fleet Utilization</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--badge-bg); color:var(--icon-color);"><i class="fas fa-flag-checkered"></i></div><h3>${state.requests.filter(t=>t.status==='Completed').length}</h3><p class="label">Completed Trips</p></div>`;
+
+    document.getElementById('statusChart').innerHTML = state.vehicles.length ? [
+      {label:'Available',color:'var(--success)',icon:'fa-circle-check'},{label:'On Trip',color:'var(--info)',icon:'fa-road'},
+      {label:'In Shop',color:'var(--warning)',icon:'fa-screwdriver-wrench'},{label:'Retired',color:'var(--slate)',icon:'fa-ban'},
+    ].map(s=>chartRow(s.label, state.vehicles.filter(v=>v.status===s.label).length, state.vehicles.length, s.color, s.icon)).join('')
+      : `<div class="empty-state" style="padding:1rem 0;"><i class="fas fa-truck"></i><p class="main">No vehicles yet</p><p class="sub">Register a vehicle to see analytics here.</p></div>`;
+    document.getElementById('utilBig').textContent = util + '%';
+  }
+  ['filterType','filterStatus'].forEach(id=> document.getElementById(id).addEventListener('change', renderDashboard));
+
+  /* ================= REPORTS ================= */
+  function renderReports(){
+    const tbody=$('#reportTableBody');
+    if(state.vehicles.length===0){
+      tbody.innerHTML=''; $('#reportEmpty').innerHTML = `<div class="empty-state"><i class="fas fa-chart-line"></i><p class="main">No data yet</p><p class="sub">Add vehicles, fuel logs, maintenance and revenue to see analytics.</p></div>`;
+      document.getElementById('reportStatsGrid').innerHTML='';
+      return;
+    }
+    $('#reportEmpty').innerHTML='';
+    let totalOpCost=0, totalRevenue=0;
+    tbody.innerHTML = state.vehicles.map(v=>{
+      const fuel=state.fuelLogs.filter(f=>f.reg===v.reg); const totalLiters=fuel.reduce((s,f)=>s+f.liters,0); const totalFuelCost=fuel.reduce((s,f)=>s+f.cost,0);
+      const maint=state.maintenance.filter(m=>m.reg===v.reg); const totalMaintCost=maint.reduce((s,m)=>s+m.cost,0);
+      const opCost=totalFuelCost+totalMaintCost; totalOpCost+=opCost;
+      const distanceTraveled=state.requests.filter(t=>t.vehicleReg===v.reg && t.status==='Completed').reduce((s,t)=>s+t.distance,0);
+      const efficiency = totalLiters>0 ? (distanceTraveled/totalLiters).toFixed(2) : '—';
+      const revenue=state.revenues.filter(r=>r.reg===v.reg).reduce((s,r)=>s+r.amount,0); totalRevenue+=revenue;
+      const roi = v.cost>0 ? (((revenue-opCost)/v.cost)*100).toFixed(1)+'%' : '—';
+      return `<tr><td><strong>${v.reg}</strong></td><td>${efficiency}</td><td>${money(totalFuelCost)}</td><td>${money(totalMaintCost)}</td><td>${money(opCost)}</td><td>${money(revenue)}</td><td>${roi}</td></tr>`;
+    }).join('');
+    const activeVehicles=state.vehicles.filter(v=>v.status!=='Retired').length;
+    const onTrip=state.vehicles.filter(v=>v.status==='On Trip').length;
+    const util = activeVehicles>0 ? Math.round((onTrip/activeVehicles)*100) : 0;
+    document.getElementById('reportStatsGrid').innerHTML = `
+      <div class="stat-card"><div class="stat-icon" style="background:var(--info-bg); color:var(--info);"><i class="fas fa-gauge-high"></i></div><h3>${util}%</h3><p class="label">Fleet Utilization</p></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--warning-bg); color:var(--warning);"><i class="fas fa-indian-rupee-sign"></i></div><h3>${money(totalOpCost)}</h3><p class="label">Total Operational Cost</p></div>`;
+  }
+
+  document.getElementById('exportCsvBtn').addEventListener('click', function(){
+    if(state.vehicles.length===0){ showToast('Nothing to export','Add some data first.','error'); return; }
+    const header=['Reg No','Fuel Efficiency (km/L)','Total Fuel Cost','Total Maintenance Cost','Operational Cost','Revenue','ROI (%)'];
+    const rows = state.vehicles.map(v=>{
+      const fuel=state.fuelLogs.filter(f=>f.reg===v.reg); const totalLiters=fuel.reduce((s,f)=>s+f.liters,0); const totalFuelCost=fuel.reduce((s,f)=>s+f.cost,0);
+      const maint=state.maintenance.filter(m=>m.reg===v.reg); const totalMaintCost=maint.reduce((s,m)=>s+m.cost,0);
+      const opCost=totalFuelCost+totalMaintCost;
+      const distanceTraveled=state.requests.filter(t=>t.vehicleReg===v.reg && t.status==='Completed').reduce((s,t)=>s+t.distance,0);
+      const efficiency = totalLiters>0 ? (distanceTraveled/totalLiters).toFixed(2) : '';
+      const revenue=state.revenues.filter(r=>r.reg===v.reg).reduce((s,r)=>s+r.amount,0);
+      const roi = v.cost>0 ? (((revenue-opCost)/v.cost)*100).toFixed(1) : '';
+      return [v.reg,efficiency,totalFuelCost,totalMaintCost,opCost,revenue,roi].join(',');
+    });
+    const csv=[header.join(','), ...rows].join('\\n');
+    const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='fleet_report.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast('CSV exported','fleet_report.csv downloaded.');
+  });
+
+  /* ================= GLOBAL SEARCH ================= */
+  document.getElementById('globalSearch').addEventListener('input', function(){
+    const q=this.value.trim(); if(q.length<2) return;
+    goToPage('requests');
+  });
+
+  /* ================= CLOCK + SIDEBAR CHIP ================= */
+  setInterval(()=>{ document.getElementById('clockLine').textContent = new Date().toLocaleTimeString('en-IN'); }, 1000);
+  function refreshChip(){
+    const d=state.driver;
+    if(!d){ document.getElementById('chipName').textContent='Driver'; document.getElementById('chipStatusText').textContent='Not set up'; document.getElementById('dutyLine1').textContent='No driver profile set'; document.getElementById('dutyDot').className='duty-dot warn'; document.getElementById('avatarInit').textContent='D'; return; }
+    document.getElementById('chipName').textContent=d.name; document.getElementById('chipStatusText').textContent=d.status;
+    document.getElementById('dutyLine1').textContent=d.name+' · '+d.status;
+    document.getElementById('dutyDot').className = 'duty-dot' + (d.status==='Suspended'||d.status==='Off Duty' ? ' warn' : '');
+    document.getElementById('avatarInit').textContent=d.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  }
+
+  /* ================= SYNC WITH SHARED STORAGE ================= */
+  async function loadFromStorage(){
+    const [driver, vehicles, requests] = await Promise.all([storeGet(K_DRIVER), storeGet(K_VEHICLES), storeGet(K_REQUESTS)]);
+    state.driver = driver || state.driver;
+    state.vehicles = vehicles || state.vehicles;
+    const incoming = requests || [];
+    incoming.forEach(r=>{ if(r.status==='Requested' && !lastReqIds.has(r.id)){ lastReqIds.add(r.id); if(state._loaded) pushNotif('New trip request: '+r.id+' from '+r.name); } if(!lastReqIds.has(r.id)) lastReqIds.add(r.id); });
+    state.requests = incoming;
+    state._loaded = true;
+  }
+
+  function refreshAll(){
+    renderVehicles(); renderTripRequests(); renderMaintenance(); renderFuel(); renderExpenses(); renderRevenue();
+    renderDashboard(); renderProfilePage(); refreshChip(); populateVehicleSelects();
+  }
+
+  async function pollLoop(){ await loadFromStorage(); refreshAll(); }
+
+  (async function init(){
+    renderNotifications();
+    await loadFromStorage();
+    refreshAll();
+    setInterval(pollLoop, 3000);
+  })();
+})();
+</script>
+</body>
+</html>
